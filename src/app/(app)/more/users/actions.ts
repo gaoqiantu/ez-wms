@@ -18,9 +18,11 @@ async function requireAdmin() {
 
 export async function getUsers() {
   await requireAdmin();
-  return db.query.users.findMany({
+  const allUsers = await db.query.users.findMany({
     orderBy: [desc(users.createdAt)],
   });
+  // Exclude passwordHash from response
+  return allUsers.map(({ passwordHash, ...user }) => user);
 }
 
 export async function createUser(data: {

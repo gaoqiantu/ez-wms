@@ -3,6 +3,7 @@
 import { db } from '@/db';
 import { transactions, products, users } from '@/db/schema';
 import { eq, desc, gte, lte, and } from 'drizzle-orm';
+import { auth } from '@/lib/auth';
 
 interface TransactionFilters {
   search?: string;
@@ -14,6 +15,10 @@ interface TransactionFilters {
 }
 
 export async function getTransactions(filters: TransactionFilters = {}) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
   const conditions = [];
 
   if (filters.fromDate) {

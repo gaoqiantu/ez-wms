@@ -5,6 +5,7 @@ import { products, inventory, locations } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
+import { auth } from '@/lib/auth';
 
 interface ImportProductRow {
   sku: string;
@@ -29,6 +30,11 @@ export async function importProducts(
   rows: ImportProductRow[],
   mode: 'add' | 'update' | 'upsert'
 ) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { added: 0, updated: 0, skipped: 0, errors: ['Not authenticated'] };
+  }
+
   const results = { added: 0, updated: 0, skipped: 0, errors: [] as string[] };
 
   for (const row of rows) {
@@ -88,6 +94,11 @@ export async function importProducts(
 }
 
 export async function importInventory(rows: ImportInventoryRow[]) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { added: 0, updated: 0, skipped: 0, errors: ['Not authenticated'] };
+  }
+
   const results = { added: 0, updated: 0, skipped: 0, errors: [] as string[] };
 
   for (const row of rows) {

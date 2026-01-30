@@ -3,8 +3,13 @@
 import { db } from '@/db';
 import { products, inventory, locations } from '@/db/schema';
 import { eq, like, or, sql } from 'drizzle-orm';
+import { auth } from '@/lib/auth';
 
 export async function getInventoryReport(search?: string, location?: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
   let query = db
     .select({
       id: inventory.id,
@@ -48,12 +53,20 @@ export async function getInventoryReport(search?: string, location?: string) {
 }
 
 export async function getLocationsForFilter() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
   return db.query.locations.findMany({
     orderBy: (loc, { asc }) => [asc(loc.sortOrder)],
   });
 }
 
 export async function getInventorySummary() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { totalSku: 0, totalBoxes: 0, totalPcs: 0 };
+  }
   const result = await db
     .select({
       totalSku: sql<number>`count(distinct ${products.id})`,
