@@ -137,5 +137,22 @@
     "updated": "Updated",
     "skipped": "Skipped",
     "errors": "Errors"
+  },
+  "reports": {
+    "title": "Reports",
+    "inventory": "Inventory Report",
+    "inventoryDesc": "Current stock by product and location",
+    "transactions": "Transaction History",
+    "transactionsDesc": "Movement history and audit log",
+    "charts": "Charts & Analytics",
+    "chartsDesc": "Visual insights and trends",
+    "noData": "No data to display",
+    "dateRange": "Date Range",
+    "from": "From",
+    "to": "To",
+    "filter": "Filter",
+    "reset": "Reset",
+    "total": "Total",
+    "summary": "Summary"
   }
 }

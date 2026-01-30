@@ -137,5 +137,22 @@
     "updated": "已更新",
     "skipped": "已跳过",
     "errors": "错误"
+  },
+  "reports": {
+    "title": "报表",
+    "inventory": "库存报表",
+    "inventoryDesc": "按产品和库位查看当前库存",
+    "transactions": "操作记录",
+    "transactionsDesc": "出入库历史和审计日志",
+    "charts": "图表分析",
+    "chartsDesc": "可视化数据和趋势",
+    "noData": "暂无数据",
+    "dateRange": "日期范围",
+    "from": "从",
+    "to": "至",
+    "filter": "筛选",
+    "reset": "重置",
+    "total": "合计",
+    "summary": "汇总"
   }
 }
