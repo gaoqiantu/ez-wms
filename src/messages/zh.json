@@ -172,5 +172,15 @@
     "outbound": "出库",
     "topProducts": "热门产品 Top 10",
     "stockByLocation": "各库位库存分布"
+  },
+  "settings": {
+    "account": "账户",
+    "language": "语言",
+    "languageDesc": "选择您的首选语言",
+    "about": "关于",
+    "aboutDesc": "应用信息",
+    "version": "版本",
+    "copyright": "轻量级瓷砖/台面店仓库管理系统",
+    "logoutConfirm": "确定要退出登录吗？"
   }
 }

@@ -172,5 +172,15 @@
     "outbound": "Outbound",
     "topProducts": "Top 10 Products",
     "stockByLocation": "Stock by Location"
+  },
+  "settings": {
+    "account": "Account",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language",
+    "about": "About",
+    "aboutDesc": "Application information",
+    "version": "Version",
+    "copyright": "Lightweight WMS for tile/countertop stores",
+    "logoutConfirm": "Are you sure you want to logout?"
   }
 }
