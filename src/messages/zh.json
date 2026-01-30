@@ -173,6 +173,41 @@
     "topProducts": "热门产品 Top 10",
     "stockByLocation": "各库位库存分布"
   },
+  "users": {
+    "add": "添加",
+    "addUser": "添加用户",
+    "editUser": "编辑用户",
+    "username": "用户名",
+    "password": "密码",
+    "newPassword": "新密码",
+    "leaveBlank": "留空保持不变",
+    "displayName": "显示名称",
+    "role": "角色",
+    "roleAdmin": "管理员",
+    "roleOperator": "操作员",
+    "fieldsRequired": "请填写所有必填项",
+    "deleteConfirm": "确定删除用户 {name}？",
+    "cannotDeleteSelf": "不能删除自己",
+    "you": "当前用户"
+  },
+  "documents": {
+    "add": "添加",
+    "addDocument": "添加单据",
+    "type": "类型",
+    "allTypes": "全部类型",
+    "typePO": "采购单",
+    "typeOrder": "销售单",
+    "typeRMA": "退货单",
+    "status": "状态",
+    "allStatus": "全部状态",
+    "statusPending": "待处理",
+    "statusCompleted": "已完成",
+    "partyName": "供应商/客户",
+    "partyNamePlaceholder": "可选",
+    "remark": "备注",
+    "markComplete": "标记完成",
+    "deleteConfirm": "确定删除单据 {docNo}？"
+  },
   "settings": {
     "account": "账户",
     "language": "语言",
@@ -182,5 +217,14 @@
     "version": "版本",
     "copyright": "轻量级瓷砖/台面店仓库管理系统",
     "logoutConfirm": "确定要退出登录吗？"
+  },
+  "locations": {
+    "add": "添加",
+    "addLocation": "添加库位",
+    "code": "编码",
+    "name": "名称",
+    "namePlaceholder": "可选描述",
+    "codeRequired": "库位编码不能为空",
+    "deleteConfirm": "确定删除库位 {code}？"
   }
 }

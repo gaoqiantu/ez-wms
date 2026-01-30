@@ -173,6 +173,41 @@
     "topProducts": "Top 10 Products",
     "stockByLocation": "Stock by Location"
   },
+  "users": {
+    "add": "Add",
+    "addUser": "Add User",
+    "editUser": "Edit User",
+    "username": "Username",
+    "password": "Password",
+    "newPassword": "New Password",
+    "leaveBlank": "Leave blank to keep current",
+    "displayName": "Display Name",
+    "role": "Role",
+    "roleAdmin": "Admin",
+    "roleOperator": "Operator",
+    "fieldsRequired": "Please fill all required fields",
+    "deleteConfirm": "Delete user {name}?",
+    "cannotDeleteSelf": "Cannot delete yourself",
+    "you": "You"
+  },
+  "documents": {
+    "add": "Add",
+    "addDocument": "Add Document",
+    "type": "Type",
+    "allTypes": "All Types",
+    "typePO": "Purchase Order",
+    "typeOrder": "Sales Order",
+    "typeRMA": "Return (RMA)",
+    "status": "Status",
+    "allStatus": "All Status",
+    "statusPending": "Pending",
+    "statusCompleted": "Completed",
+    "partyName": "Supplier/Customer",
+    "partyNamePlaceholder": "Optional",
+    "remark": "Remark",
+    "markComplete": "Mark as completed",
+    "deleteConfirm": "Delete document {docNo}?"
+  },
   "settings": {
     "account": "Account",
     "language": "Language",
@@ -182,5 +217,14 @@
     "version": "Version",
     "copyright": "Lightweight WMS for tile/countertop stores",
     "logoutConfirm": "Are you sure you want to logout?"
+  },
+  "locations": {
+    "add": "Add",
+    "addLocation": "Add Location",
+    "code": "Code",
+    "name": "Name",
+    "namePlaceholder": "Optional description",
+    "codeRequired": "Location code is required",
+    "deleteConfirm": "Delete location {code}?"
   }
 }
