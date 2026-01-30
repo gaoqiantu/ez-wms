@@ -165,5 +165,12 @@
     "fromDate": "开始日期",
     "toDate": "结束日期",
     "download": "下载Excel"
+  },
+  "charts": {
+    "dailyMovement": "每日出入库",
+    "inbound": "入库",
+    "outbound": "出库",
+    "topProducts": "热门产品 Top 10",
+    "stockByLocation": "各库位库存分布"
   }
 }
