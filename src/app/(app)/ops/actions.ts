@@ -1,0 +1,46 @@
+'use server';
+
+import { db } from '@/db';
+import { products, inventory, locations } from '@/db/schema';
+import { eq, or, like } from 'drizzle-orm';
+
+export async function searchProduct(query: string) {
+  const result = await db.query.products.findFirst({
+    where: or(
+      eq(products.sku, query),
+      eq(products.barcode, query),
+      like(products.name, `%${query}%`)
+    ),
+  });
+  return result;
+}
+
+export async function getProductWithInventory(productId: string, location?: string) {
+  const product = await db.query.products.findFirst({
+    where: eq(products.id, productId),
+  });
+
+  if (!product) return null;
+
+  let inv = null;
+  if (location) {
+    inv = await db.query.inventory.findFirst({
+      where: (inv, { and, eq }) =>
+        and(eq(inv.productId, productId), eq(inv.location, location)),
+    });
+  }
+
+  return { product, inventory: inv };
+}
+
+export async function getLocations() {
+  return db.query.locations.findMany({
+    orderBy: (loc, { asc }) => [asc(loc.sortOrder)],
+  });
+}
+
+export async function getInventoryByProduct(productId: string) {
+  return db.query.inventory.findMany({
+    where: eq(inventory.productId, productId),
+  });
+}
