@@ -1,0 +1,68 @@
+{
+  "common": {
+    "appName": "ez-wms",
+    "confirm": "确认",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "search": "搜索",
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "success": "成功",
+    "error": "错误"
+  },
+  "auth": {
+    "login": "登录",
+    "logout": "退出",
+    "username": "用户名",
+    "password": "密码",
+    "loginButton": "登录",
+    "loginError": "用户名或密码错误"
+  },
+  "nav": {
+    "dashboard": "仪表盘",
+    "operations": "操作",
+    "reports": "报表",
+    "more": "更多"
+  },
+  "ops": {
+    "inbound": "入库",
+    "outbound": "出库",
+    "transfer": "移库",
+    "stocktake": "盘点",
+    "return": "退货",
+    "scanOrSearch": "扫描或搜索...",
+    "boxes": "整箱",
+    "pieces": "散片",
+    "location": "库位",
+    "document": "单据",
+    "remark": "备注",
+    "currentStock": "当前库存"
+  },
+  "products": {
+    "title": "产品",
+    "sku": "货号",
+    "name": "产品名称",
+    "brand": "品牌",
+    "series": "系列",
+    "spec": "规格",
+    "color": "颜色/花色",
+    "unit": "单位",
+    "pcsPerBox": "片/箱",
+    "areaPerPcs": "单片面积 (m²)"
+  },
+  "inventory": {
+    "title": "库存",
+    "boxQty": "整箱数",
+    "pcsQty": "散片数",
+    "totalPcs": "总片数",
+    "totalArea": "总面积"
+  },
+  "dashboard": {
+    "todayActivity": "今日动态",
+    "lowStockAlerts": "低库存预警",
+    "quickActions": "快捷操作",
+    "recentTransactions": "最近操作"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "common": {
+    "appName": "ez-wms",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "loading": "Loading...",
+    "noData": "No data",
+    "success": "Success",
+    "error": "Error"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "loginError": "Invalid username or password"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "operations": "Operations",
+    "reports": "Reports",
+    "more": "More"
+  },
+  "ops": {
+    "inbound": "Inbound",
+    "outbound": "Outbound",
+    "transfer": "Transfer",
+    "stocktake": "Stocktake",
+    "return": "Return",
+    "scanOrSearch": "Scan QR or search...",
+    "boxes": "Boxes",
+    "pieces": "Pieces",
+    "location": "Location",
+    "document": "Document",
+    "remark": "Remark",
+    "currentStock": "Current Stock"
+  },
+  "products": {
+    "title": "Products",
+    "sku": "SKU",
+    "name": "Product Name",
+    "brand": "Brand",
+    "series": "Series",
+    "spec": "Specification",
+    "color": "Color/Pattern",
+    "unit": "Unit",
+    "pcsPerBox": "Pcs/Box",
+    "areaPerPcs": "Area/Pc (m²)"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "boxQty": "Boxes",
+    "pcsQty": "Loose Pcs",
+    "totalPcs": "Total Pieces",
+    "totalArea": "Total Area"
+  },
+  "dashboard": {
+    "todayActivity": "Today's Activity",
+    "lowStockAlerts": "Low Stock Alerts",
+    "quickActions": "Quick Actions",
+    "recentTransactions": "Recent Transactions"
+  }
+}
