@@ -27,11 +27,17 @@
     "more": "更多"
   },
   "ops": {
+    "title": "仓库操作",
     "inbound": "入库",
+    "inboundDesc": "收货入库",
     "outbound": "出库",
+    "outboundDesc": "发货出库",
     "transfer": "移库",
+    "transferDesc": "库位移动",
     "stocktake": "盘点",
+    "stocktakeDesc": "盘点库存",
     "return": "退货",
+    "returnDesc": "处理退货",
     "scanOrSearch": "扫描或搜索...",
     "boxes": "整箱",
     "pieces": "散片",

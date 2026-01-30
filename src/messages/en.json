@@ -27,11 +27,17 @@
     "more": "More"
   },
   "ops": {
+    "title": "Operations",
     "inbound": "Inbound",
+    "inboundDesc": "Receive goods into warehouse",
     "outbound": "Outbound",
+    "outboundDesc": "Ship goods out of warehouse",
     "transfer": "Transfer",
+    "transferDesc": "Move items between locations",
     "stocktake": "Stocktake",
+    "stocktakeDesc": "Count and adjust inventory",
     "return": "Return",
+    "returnDesc": "Process returned items",
     "scanOrSearch": "Scan QR or search...",
     "boxes": "Boxes",
     "pieces": "Pieces",
