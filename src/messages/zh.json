@@ -60,7 +60,11 @@
     "insufficientStock": "库存不足",
     "fromLocation": "原库位",
     "toLocation": "目标库位",
-    "sameLocationError": "原库位和目标库位不能相同"
+    "sameLocationError": "原库位和目标库位不能相同",
+    "cameraPermissionDenied": "相机权限被拒绝，请允许访问相机",
+    "noCameraFound": "未检测到相机设备",
+    "cameraInUse": "相机正被其他应用使用",
+    "cameraError": "无法启动相机，请使用搜索功能"
   },
   "products": {
     "title": "产品",

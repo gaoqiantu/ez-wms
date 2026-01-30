@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Camera, Search, X } from 'lucide-react';
+import { Camera, Search, X, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface QrScannerProps {
@@ -16,8 +16,8 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
   const t = useTranslations('ops');
   const [isScanning, setIsScanning] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return () => {
@@ -28,9 +28,10 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
   }, []);
 
   const startScanner = async () => {
-    if (!containerRef.current) return;
-
+    setError(null);
     setIsScanning(true);
+
+    // Create scanner instance
     scannerRef.current = new Html5Qrcode('qr-reader');
 
     try {
@@ -41,10 +42,24 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
           onScan(decodedText);
           stopScanner();
         },
-        () => {}
+        () => {} // Ignore QR not found frames
       );
     } catch (err) {
       console.error('Scanner error:', err);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+
+      // Provide user-friendly error messages
+      if (errorMessage.includes('Permission') || errorMessage.includes('denied')) {
+        setError(t('cameraPermissionDenied'));
+      } else if (errorMessage.includes('NotFoundError') || errorMessage.includes('Requested device not found')) {
+        setError(t('noCameraFound'));
+      } else if (errorMessage.includes('NotAllowedError')) {
+        setError(t('cameraPermissionDenied'));
+      } else if (errorMessage.includes('NotReadableError')) {
+        setError(t('cameraInUse'));
+      } else {
+        setError(t('cameraError'));
+      }
       setIsScanning(false);
     }
   };
@@ -54,6 +69,7 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
       await scannerRef.current.stop();
     }
     setIsScanning(false);
+    setError(null);
   };
 
   const handleSearch = () => {
@@ -91,10 +107,16 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
         </Button>
       </div>
 
+      {error && (
+        <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4" />
+          {error}
+        </div>
+      )}
+
       {isScanning && (
         <div
           id="qr-reader"
-          ref={containerRef}
           className="mx-auto w-full max-w-sm overflow-hidden rounded-lg"
         />
       )}

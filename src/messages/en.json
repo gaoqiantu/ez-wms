@@ -60,7 +60,11 @@
     "insufficientStock": "Insufficient stock",
     "fromLocation": "From",
     "toLocation": "To",
-    "sameLocationError": "Source and destination cannot be the same"
+    "sameLocationError": "Source and destination cannot be the same",
+    "cameraPermissionDenied": "Camera permission denied. Please allow camera access.",
+    "noCameraFound": "No camera found on this device.",
+    "cameraInUse": "Camera is in use by another application.",
+    "cameraError": "Unable to start camera. Try using the search field instead."
   },
   "products": {
     "title": "Products",
