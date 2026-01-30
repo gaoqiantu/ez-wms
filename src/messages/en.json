@@ -72,7 +72,11 @@
     "color": "Color/Pattern",
     "unit": "Unit",
     "pcsPerBox": "Pcs/Box",
-    "areaPerPcs": "Area/Pc (m²)"
+    "areaPerPcs": "Area/Pc (m²)",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this product?"
   },
   "inventory": {
     "title": "Inventory",

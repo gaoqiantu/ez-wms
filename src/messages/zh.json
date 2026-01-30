@@ -72,7 +72,11 @@
     "color": "颜色/花色",
     "unit": "单位",
     "pcsPerBox": "片/箱",
-    "areaPerPcs": "单片面积 (m²)"
+    "areaPerPcs": "单片面积 (m²)",
+    "add": "添加",
+    "edit": "编辑",
+    "delete": "删除",
+    "deleteConfirm": "确定要删除此产品吗？"
   },
   "inventory": {
     "title": "库存",
