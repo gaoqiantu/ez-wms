@@ -51,7 +51,16 @@
     "systemStock": "系统库存",
     "actualCount": "实际数量",
     "variance": "差异",
-    "noAdjustment": "无需调整"
+    "noAdjustment": "无需调整",
+    "returnReason": "退货原因",
+    "reasonCustomer": "客户退货",
+    "reasonQuality": "质量问题",
+    "reasonOther": "其他",
+    "selectReason": "选择原因",
+    "insufficientStock": "库存不足",
+    "fromLocation": "原库位",
+    "toLocation": "目标库位",
+    "sameLocationError": "原库位和目标库位不能相同"
   },
   "products": {
     "title": "产品",

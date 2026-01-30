@@ -51,7 +51,16 @@
     "systemStock": "System Stock",
     "actualCount": "Actual Count",
     "variance": "Variance",
-    "noAdjustment": "No adjustment needed"
+    "noAdjustment": "No adjustment needed",
+    "returnReason": "Return Reason",
+    "reasonCustomer": "Customer Return",
+    "reasonQuality": "Quality Issue",
+    "reasonOther": "Other",
+    "selectReason": "Select reason",
+    "insufficientStock": "Insufficient stock",
+    "fromLocation": "From",
+    "toLocation": "To",
+    "sameLocationError": "Source and destination cannot be the same"
   },
   "products": {
     "title": "Products",
