@@ -44,7 +44,10 @@
     "location": "Location",
     "document": "Document",
     "remark": "Remark",
-    "currentStock": "Current Stock"
+    "currentStock": "Current Stock",
+    "productNotFound": "Product not found",
+    "selectProductAndLocation": "Please scan a product and select a location",
+    "enterQuantity": "Please enter a quantity"
   },
   "products": {
     "title": "Products",

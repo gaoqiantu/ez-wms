@@ -44,7 +44,10 @@
     "location": "库位",
     "document": "单据",
     "remark": "备注",
-    "currentStock": "当前库存"
+    "currentStock": "当前库存",
+    "productNotFound": "未找到产品",
+    "selectProductAndLocation": "请扫描产品并选择库位",
+    "enterQuantity": "请输入数量"
   },
   "products": {
     "title": "产品",
