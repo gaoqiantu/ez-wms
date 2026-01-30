@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { inventory, transactions } from '@/db/schema';
+import { inventory, transactions, products } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
@@ -26,6 +26,12 @@ export async function processTransfer(input: TransferInput) {
   }
 
   try {
+    // Get product for pcsPerBox
+    const product = await db.query.products.findFirst({
+      where: eq(products.id, input.productId),
+    });
+    const pcsPerBox = product?.pcsPerBox || 1;
+
     // Get source inventory
     const source = await db.query.inventory.findFirst({
       where: and(
@@ -38,28 +44,19 @@ export async function processTransfer(input: TransferInput) {
       return { error: 'No inventory at source location' };
     }
 
-    // Check if enough stock at source
-    if ((source.boxQty || 0) < input.boxQty || (source.pcsQty || 0) < input.pcsQty) {
+    // Check if enough stock at source using total pieces
+    const totalAvailable = (source.boxQty || 0) * pcsPerBox + (source.pcsQty || 0);
+    const totalRequested = input.boxQty * pcsPerBox + input.pcsQty;
+    if (totalRequested > totalAvailable) {
       return { error: 'Insufficient stock at source location' };
     }
 
-    // Update source inventory (decrease)
-    const newSourceBoxes = (source.boxQty || 0) - input.boxQty;
-    const newSourcePcs = (source.pcsQty || 0) - input.pcsQty;
+    // Calculate new source inventory (convert to total pieces, subtract, convert back)
+    const remainingPcs = totalAvailable - totalRequested;
+    const newSourceBoxes = Math.floor(remainingPcs / pcsPerBox);
+    const newSourcePcs = remainingPcs % pcsPerBox;
 
-    if (newSourceBoxes === 0 && newSourcePcs === 0) {
-      // Delete empty inventory record
-      await db.delete(inventory).where(eq(inventory.id, source.id));
-    } else {
-      await db.update(inventory)
-        .set({
-          boxQty: newSourceBoxes,
-          pcsQty: newSourcePcs,
-        })
-        .where(eq(inventory.id, source.id));
-    }
-
-    // Check if destination inventory exists
+    // Check if destination inventory exists (before transaction)
     const destination = await db.query.inventory.findFirst({
       where: and(
         eq(inventory.productId, input.productId),
@@ -67,34 +64,48 @@ export async function processTransfer(input: TransferInput) {
       ),
     });
 
-    if (destination) {
-      // Update existing destination inventory
-      await db.update(inventory)
-        .set({
-          boxQty: (destination.boxQty || 0) + input.boxQty,
-          pcsQty: (destination.pcsQty || 0) + input.pcsQty,
-        })
-        .where(eq(inventory.id, destination.id));
-    } else {
-      // Create new destination inventory record
-      await db.insert(inventory).values({
+    // Use database transaction for atomicity
+    await db.transaction(async (tx) => {
+      // Update or delete source inventory
+      if (newSourceBoxes === 0 && newSourcePcs === 0) {
+        await tx.delete(inventory).where(eq(inventory.id, source.id));
+      } else {
+        await tx.update(inventory)
+          .set({
+            boxQty: newSourceBoxes,
+            pcsQty: newSourcePcs,
+          })
+          .where(eq(inventory.id, source.id));
+      }
+
+      // Update or create destination inventory
+      if (destination) {
+        await tx.update(inventory)
+          .set({
+            boxQty: (destination.boxQty || 0) + input.boxQty,
+            pcsQty: (destination.pcsQty || 0) + input.pcsQty,
+          })
+          .where(eq(inventory.id, destination.id));
+      } else {
+        await tx.insert(inventory).values({
+          productId: input.productId,
+          boxQty: input.boxQty,
+          pcsQty: input.pcsQty,
+          location: input.toLocation,
+        });
+      }
+
+      // Create transaction record
+      await tx.insert(transactions).values({
+        type: 'MOVE',
         productId: input.productId,
         boxQty: input.boxQty,
         pcsQty: input.pcsQty,
-        location: input.toLocation,
+        fromLocation: input.fromLocation,
+        toLocation: input.toLocation,
+        operatorId: session.user.id,
+        remark: input.remark || null,
       });
-    }
-
-    // Create transaction record
-    await db.insert(transactions).values({
-      type: 'MOVE',
-      productId: input.productId,
-      boxQty: input.boxQty,
-      pcsQty: input.pcsQty,
-      fromLocation: input.fromLocation,
-      toLocation: input.toLocation,
-      operatorId: session.user.id,
-      remark: input.remark || null,
     });
 
     revalidatePath('/ops/transfer');

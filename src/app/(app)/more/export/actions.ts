@@ -3,8 +3,13 @@
 import { db } from '@/db';
 import { products, inventory, transactions, users } from '@/db/schema';
 import { eq, desc, gte, lte, and } from 'drizzle-orm';
+import { auth } from '@/lib/auth';
 
 export async function getInventoryForExport() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
   const results = await db
     .select({
       sku: products.sku,
@@ -30,6 +35,11 @@ export async function getInventoryForExport() {
 }
 
 export async function getTransactionsForExport(fromDate?: string, toDate?: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
+
   let whereClause = undefined;
 
   if (fromDate && toDate) {
@@ -69,6 +79,10 @@ export async function getTransactionsForExport(fromDate?: string, toDate?: strin
 }
 
 export async function getProductsForExport() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
   return db.query.products.findMany({
     orderBy: [products.sku],
   });

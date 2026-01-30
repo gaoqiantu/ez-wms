@@ -3,8 +3,13 @@
 import { db } from '@/db';
 import { transactions, products, inventory } from '@/db/schema';
 import { eq, sql, gte, desc } from 'drizzle-orm';
+import { auth } from '@/lib/auth';
 
 export async function getDailyMovement(days: number = 7) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
   startDate.setHours(0, 0, 0, 0);
@@ -42,6 +47,11 @@ export async function getDailyMovement(days: number = 7) {
 }
 
 export async function getTopProducts(limit: number = 10) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
+
   const results = await db
     .select({
       sku: products.sku,
@@ -58,6 +68,11 @@ export async function getTopProducts(limit: number = 10) {
 }
 
 export async function getStockByLocation() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
+
   const results = await db
     .select({
       location: inventory.location,

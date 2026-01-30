@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
@@ -76,7 +76,11 @@ export const transactions = sqliteTable('transactions', {
   operatorId: text('operator_id').notNull().references(() => users.id),
   remark: text('remark'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-});
+}, (table) => [
+  index('transactions_product_idx').on(table.productId),
+  index('transactions_created_at_idx').on(table.createdAt),
+  index('transactions_type_idx').on(table.type),
+]);
 
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
