@@ -109,5 +109,33 @@
     "usersDesc": "Manage user accounts",
     "settings": "Settings",
     "settingsDesc": "App preferences and configuration"
+  },
+  "print": {
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "selected": "Selected",
+    "copies": "Copies per item",
+    "labelSize": "Label Size",
+    "print": "Print",
+    "labels": "labels"
+  },
+  "import": {
+    "importType": "Import Type",
+    "products": "Products",
+    "inventory": "Inventory",
+    "importMode": "Import Mode",
+    "modeAdd": "Add new only",
+    "modeUpdate": "Update existing only",
+    "modeUpsert": "Add + Update",
+    "downloadTemplate": "Download Template",
+    "dropFile": "Drop CSV file here or click to browse",
+    "preview": "Preview",
+    "rows": "rows",
+    "andMore": "and {count} more rows",
+    "import": "Import",
+    "added": "Added",
+    "updated": "Updated",
+    "skipped": "Skipped",
+    "errors": "Errors"
   }
 }

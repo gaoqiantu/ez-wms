@@ -109,5 +109,33 @@
     "usersDesc": "管理用户账户",
     "settings": "设置",
     "settingsDesc": "应用偏好和配置"
+  },
+  "print": {
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "selected": "已选",
+    "copies": "每个打印份数",
+    "labelSize": "标签尺寸",
+    "print": "打印",
+    "labels": "张标签"
+  },
+  "import": {
+    "importType": "导入类型",
+    "products": "产品",
+    "inventory": "库存",
+    "importMode": "导入模式",
+    "modeAdd": "仅添加新记录",
+    "modeUpdate": "仅更新已有",
+    "modeUpsert": "添加+更新",
+    "downloadTemplate": "下载模板",
+    "dropFile": "拖放CSV文件或点击选择",
+    "preview": "预览",
+    "rows": "行",
+    "andMore": "还有 {count} 行",
+    "import": "导入",
+    "added": "已添加",
+    "updated": "已更新",
+    "skipped": "已跳过",
+    "errors": "错误"
   }
 }
