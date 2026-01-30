@@ -154,5 +154,16 @@
     "reset": "Reset",
     "total": "Total",
     "summary": "Summary"
+  },
+  "export": {
+    "inventoryExport": "Inventory Export",
+    "inventoryExportDesc": "Current stock with product details and locations",
+    "transactionsExport": "Transactions Export",
+    "transactionsExportDesc": "Movement history with optional date filter",
+    "productsExport": "Products Export",
+    "productsExportDesc": "Product master data catalog",
+    "fromDate": "From Date",
+    "toDate": "To Date",
+    "download": "Download Excel"
   }
 }

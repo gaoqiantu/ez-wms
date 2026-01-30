@@ -154,5 +154,16 @@
     "reset": "重置",
     "total": "合计",
     "summary": "汇总"
+  },
+  "export": {
+    "inventoryExport": "库存导出",
+    "inventoryExportDesc": "当前库存及产品详情和库位",
+    "transactionsExport": "操作记录导出",
+    "transactionsExportDesc": "出入库历史，可按日期筛选",
+    "productsExport": "产品导出",
+    "productsExportDesc": "产品主数据目录",
+    "fromDate": "开始日期",
+    "toDate": "结束日期",
+    "download": "下载Excel"
   }
 }
