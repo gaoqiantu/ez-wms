@@ -26,8 +26,11 @@ import { toast } from 'sonner';
 import { createUser, updateUser, deleteUser } from './actions';
 import type { User } from '@/db/schema';
 
+// User type without passwordHash (for security - server never sends it)
+type SafeUser = Omit<User, 'passwordHash'>;
+
 interface UsersListProps {
-  initialUsers: User[];
+  initialUsers: SafeUser[];
   currentUserId: string;
 }
 
@@ -38,7 +41,7 @@ export function UsersList({ initialUsers, currentUserId }: UsersListProps) {
   const [users, setUsers] = useState(initialUsers);
   const [isPending, startTransition] = useTransition();
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<SafeUser | null>(null);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -94,7 +97,7 @@ export function UsersList({ initialUsers, currentUserId }: UsersListProps) {
     });
   };
 
-  const handleDelete = (user: User) => {
+  const handleDelete = (user: SafeUser) => {
     if (user.id === currentUserId) {
       toast.error(t('cannotDeleteSelf'));
       return;
@@ -113,7 +116,7 @@ export function UsersList({ initialUsers, currentUserId }: UsersListProps) {
     });
   };
 
-  const startEdit = (user: User) => {
+  const startEdit = (user: SafeUser) => {
     setEditingUser(user);
     setFormData({
       username: user.username,

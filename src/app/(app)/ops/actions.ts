@@ -62,3 +62,31 @@ export async function getInventoryByProduct(productId: string) {
     where: eq(inventory.productId, productId),
   });
 }
+
+// Combined action to eliminate waterfall requests
+export async function searchProductWithInventory(query: string, location?: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+
+  const product = await db.query.products.findFirst({
+    where: or(
+      eq(products.sku, query),
+      eq(products.barcode, query),
+      like(products.name, `%${query}%`)
+    ),
+  });
+
+  if (!product) return null;
+
+  let inv = null;
+  if (location) {
+    inv = await db.query.inventory.findFirst({
+      where: (inv, { and, eq }) =>
+        and(eq(inv.productId, product.id), eq(inv.location, location)),
+    });
+  }
+
+  return { product, inventory: inv };
+}

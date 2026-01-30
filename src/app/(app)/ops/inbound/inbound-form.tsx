@@ -10,7 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { searchProduct, getProductWithInventory } from '../actions';
+import { Loader2 } from 'lucide-react';
+import { searchProductWithInventory } from '../actions';
 import { processInbound } from './actions';
 import type { Product, Location, Inventory } from '@/db/schema';
 
@@ -31,14 +32,10 @@ export function InboundForm({ locations }: InboundFormProps) {
   const [remark, setRemark] = useState('');
 
   const handleScan = async (value: string) => {
-    const found = await searchProduct(value);
-    if (found) {
-      setProduct(found);
-      // Get current inventory at selected location
-      if (location) {
-        const data = await getProductWithInventory(found.id, location);
-        setCurrentInventory(data?.inventory || null);
-      }
+    const result = await searchProductWithInventory(value, location);
+    if (result?.product) {
+      setProduct(result.product);
+      setCurrentInventory(result.inventory || null);
     } else {
       toast.error(t('productNotFound'));
     }
@@ -47,8 +44,8 @@ export function InboundForm({ locations }: InboundFormProps) {
   const handleLocationChange = async (newLocation: string) => {
     setLocation(newLocation);
     if (product) {
-      const data = await getProductWithInventory(product.id, newLocation);
-      setCurrentInventory(data?.inventory || null);
+      const result = await searchProductWithInventory(product.sku, newLocation);
+      setCurrentInventory(result?.inventory || null);
     }
   };
 
@@ -137,20 +134,21 @@ export function InboundForm({ locations }: InboundFormProps) {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 h-12 text-base active:scale-[0.98] transition-transform"
               onClick={handleReset}
             >
               {tCommon('cancel')}
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 h-12 text-base bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] transition-transform"
               onClick={handleSubmit}
               disabled={isPending}
             >
-              {isPending ? '...' : tCommon('confirm')}
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+              {tCommon('confirm')}
             </Button>
           </div>
         </>

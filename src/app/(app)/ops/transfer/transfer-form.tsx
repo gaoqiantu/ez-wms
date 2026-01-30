@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 import { searchProduct, getInventoryByProduct } from '../actions';
 import { processTransfer } from './actions';
 import type { Product, Location, Inventory } from '@/db/schema';
@@ -203,20 +204,21 @@ export function TransferForm({ locations }: TransferFormProps) {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 h-12 text-base active:scale-[0.98] transition-transform"
               onClick={handleReset}
             >
               {tCommon('cancel')}
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 h-12 text-base bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition-transform"
               onClick={handleSubmit}
               disabled={isPending || fromLocation === toLocation}
             >
-              {isPending ? '...' : tCommon('confirm')}
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+              {tCommon('confirm')}
             </Button>
           </div>
         </>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,40 +21,42 @@ export function QuantityStepper({
   min = 0,
   max = 9999
 }: QuantityStepperProps) {
-  const decrement = () => {
+  const decrement = useCallback(() => {
     if (value > min) onChange(value - 1);
-  };
+  }, [value, min, onChange]);
 
-  const increment = () => {
+  const increment = useCallback(() => {
     if (value < max) onChange(value + 1);
-  };
+  }, [value, max, onChange]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(e.target.value) || 0;
     if (newValue >= min && newValue <= max) {
       onChange(newValue);
     }
-  };
+  }, [min, max, onChange]);
 
   return (
     <div className="flex items-center justify-between">
-      <Label className="text-sm font-medium">{label}</Label>
-      <div className="flex items-center gap-2">
+      <Label className="text-base font-medium">{label}</Label>
+      <div className="flex items-center gap-3">
         <Button
           type="button"
           variant="outline"
           size="icon"
-          className="h-10 w-10"
+          className="h-12 w-12 rounded-xl text-lg active:scale-95 transition-transform"
           onClick={decrement}
           disabled={value <= min}
         >
-          <Minus className="h-4 w-4" />
+          <Minus className="h-5 w-5" />
         </Button>
         <Input
           type="number"
+          inputMode="numeric"
+          pattern="[0-9]*"
           value={value}
           onChange={handleInputChange}
-          className="h-10 w-20 text-center"
+          className="h-12 w-20 text-center text-lg font-semibold rounded-xl"
           min={min}
           max={max}
         />
@@ -61,11 +64,11 @@ export function QuantityStepper({
           type="button"
           variant="outline"
           size="icon"
-          className="h-10 w-10"
+          className="h-12 w-12 rounded-xl text-lg active:scale-95 transition-transform"
           onClick={increment}
           disabled={value >= max}
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-5 w-5" />
         </Button>
       </div>
     </div>

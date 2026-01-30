@@ -16,7 +16,7 @@ export function Header({ title, showBack }: HeaderProps) {
   const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background px-4">
+    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur-sm px-4 pt-[env(safe-area-inset-top)]">
       <div className="flex items-center gap-2">
         {showBack && (
           <Button
