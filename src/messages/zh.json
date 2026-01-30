@@ -47,7 +47,11 @@
     "currentStock": "当前库存",
     "productNotFound": "未找到产品",
     "selectProductAndLocation": "请扫描产品并选择库位",
-    "enterQuantity": "请输入数量"
+    "enterQuantity": "请输入数量",
+    "systemStock": "系统库存",
+    "actualCount": "实际数量",
+    "variance": "差异",
+    "noAdjustment": "无需调整"
   },
   "products": {
     "title": "产品",

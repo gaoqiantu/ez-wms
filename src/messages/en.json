@@ -47,7 +47,11 @@
     "currentStock": "Current Stock",
     "productNotFound": "Product not found",
     "selectProductAndLocation": "Please scan a product and select a location",
-    "enterQuantity": "Please enter a quantity"
+    "enterQuantity": "Please enter a quantity",
+    "systemStock": "System Stock",
+    "actualCount": "Actual Count",
+    "variance": "Variance",
+    "noAdjustment": "No adjustment needed"
   },
   "products": {
     "title": "Products",
