@@ -86,5 +86,24 @@
     "lowStockAlerts": "Low Stock Alerts",
     "quickActions": "Quick Actions",
     "recentTransactions": "Recent Transactions"
+  },
+  "more": {
+    "title": "More",
+    "products": "Products",
+    "productsDesc": "Manage product catalog",
+    "printLabels": "Print Labels",
+    "printLabelsDesc": "Generate QR code labels",
+    "import": "Import Data",
+    "importDesc": "Import products and inventory from CSV",
+    "locations": "Locations",
+    "locationsDesc": "Manage warehouse locations",
+    "documents": "Documents",
+    "documentsDesc": "View PO, Orders, and RMA",
+    "export": "Export Data",
+    "exportDesc": "Download inventory and reports",
+    "users": "Users",
+    "usersDesc": "Manage user accounts",
+    "settings": "Settings",
+    "settingsDesc": "App preferences and configuration"
   }
 }

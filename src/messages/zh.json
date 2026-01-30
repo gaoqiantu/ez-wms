@@ -86,5 +86,24 @@
     "lowStockAlerts": "低库存预警",
     "quickActions": "快捷操作",
     "recentTransactions": "最近操作"
+  },
+  "more": {
+    "title": "更多",
+    "products": "产品管理",
+    "productsDesc": "管理产品目录",
+    "printLabels": "打印标签",
+    "printLabelsDesc": "生成二维码标签",
+    "import": "导入数据",
+    "importDesc": "从CSV导入产品和库存",
+    "locations": "库位管理",
+    "locationsDesc": "管理仓库库位",
+    "documents": "单据管理",
+    "documentsDesc": "查看采购单、销售单、退货单",
+    "export": "导出数据",
+    "exportDesc": "下载库存和报表",
+    "users": "用户管理",
+    "usersDesc": "管理用户账户",
+    "settings": "设置",
+    "settingsDesc": "应用偏好和配置"
   }
 }
