@@ -84,8 +84,7 @@ export function InvoicePrint({ invoice }: InvoicePrintProps) {
         </div>
 
         {/* Header fields row */}
-        <div className="grid grid-cols-4 gap-2 mb-4 text-sm border border-black p-2">
-          <div><strong>Terms:</strong> {invoice.terms || ''}</div>
+        <div className="grid grid-cols-3 gap-2 mb-4 text-sm border border-black p-2">
           <div><strong>Rep:</strong> {invoice.rep || ''}</div>
           <div><strong>Via:</strong> {invoice.via || ''}</div>
           <div><strong>Ship:</strong> {invoice.ship || ''}</div>
@@ -189,10 +188,19 @@ export function InvoicePrint({ invoice }: InvoicePrintProps) {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
-          body > *:not(.print-invoice) {
-            display: none !important;
+          /* Hide everything except the invoice content */
+          body * {
+            visibility: hidden;
+          }
+          .print-invoice,
+          .print-invoice * {
+            visibility: visible;
           }
           .print-invoice {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
             padding: 0 !important;
             max-width: 100% !important;
           }
