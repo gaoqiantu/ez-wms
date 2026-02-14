@@ -12,25 +12,21 @@ export async function getInventoryForExport() {
   }
   const results = await db
     .select({
-      sku: products.sku,
-      name: products.name,
-      brand: products.brand,
-      spec: products.spec,
-      color: products.color,
+      itemCode: products.itemCode,
+      description: products.description,
+      priceEach: products.priceEach,
       location: inventory.location,
       boxQty: inventory.boxQty,
       pcsQty: inventory.pcsQty,
       pcsPerBox: products.pcsPerBox,
-      areaPerPcs: products.areaPerPcs,
     })
     .from(inventory)
     .innerJoin(products, eq(inventory.productId, products.id))
-    .orderBy(products.sku, inventory.location);
+    .orderBy(products.itemCode, inventory.location);
 
   return results.map(row => ({
     ...row,
     totalPcs: (row.boxQty || 0) * (row.pcsPerBox || 1) + (row.pcsQty || 0),
-    totalArea: ((row.boxQty || 0) * (row.pcsPerBox || 1) + (row.pcsQty || 0)) * (row.areaPerPcs || 0),
   }));
 }
 
@@ -57,8 +53,8 @@ export async function getTransactionsForExport(fromDate?: string, toDate?: strin
     .select({
       createdAt: transactions.createdAt,
       type: transactions.type,
-      sku: products.sku,
-      productName: products.name,
+      itemCode: products.itemCode,
+      description: products.description,
       boxQty: transactions.boxQty,
       pcsQty: transactions.pcsQty,
       fromLocation: transactions.fromLocation,
@@ -84,6 +80,6 @@ export async function getProductsForExport() {
     return [];
   }
   return db.query.products.findMany({
-    orderBy: [products.sku],
+    orderBy: [products.itemCode],
   });
 }

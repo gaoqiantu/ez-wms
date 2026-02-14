@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, Plus } from 'lucide-react';
 import { getProducts } from './actions';
@@ -76,21 +75,12 @@ export function ProductList({ initialProducts }: ProductListProps) {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-sm font-semibold">
-                          {product.sku}
+                          {product.itemCode}
                         </span>
-                        {product.brand && (
-                          <Badge variant="secondary" className="text-xs">
-                            {product.brand}
-                          </Badge>
-                        )}
                       </div>
-                      <h3 className="font-medium">{product.name}</h3>
-                      <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                        {product.spec && <span>{product.spec}</span>}
-                        {product.color && <span>• {product.color}</span>}
-                        {product.pcsPerBox && (
-                          <span>• {product.pcsPerBox} {t('pcsPerBox')}</span>
-                        )}
+                      <h3 className="font-medium">{product.description}</h3>
+                      <div className="text-sm text-muted-foreground">
+                        ${product.priceEach.toFixed(2)} / {product.unit}
                       </div>
                     </div>
                   </div>

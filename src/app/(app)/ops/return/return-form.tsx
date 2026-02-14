@@ -58,7 +58,7 @@ export function ReturnForm({ locations }: ReturnFormProps) {
   const handleLocationChange = async (newLocation: string) => {
     setLocation(newLocation);
     if (product) {
-      const result = await searchProductWithInventory(product.sku, newLocation);
+      const result = await searchProductWithInventory(product.itemCode, newLocation);
       setCurrentInventory(result?.inventory || null);
     }
   };

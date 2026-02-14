@@ -24,8 +24,8 @@ interface Transaction {
   fromLocation: string | null;
   toLocation: string | null;
   remark: string | null;
-  sku: string;
-  productName: string;
+  itemCode: string;
+  productDescription: string | null;
   operatorName: string;
 }
 
@@ -157,13 +157,13 @@ export function TransactionList({ initialData }: TransactionListProps) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-sm font-medium">{item.sku}</span>
+                        <span className="font-mono text-sm font-medium">{item.itemCode}</span>
                         <span className="text-xs text-muted-foreground">
                           {formatDate(item.createdAt)}
                         </span>
                       </div>
                       <div className="text-sm text-muted-foreground truncate">
-                        {item.productName}
+                        {item.productDescription}
                       </div>
                       <div className="mt-1 flex items-center gap-2 text-xs">
                         <span className="font-medium">{formatQty(item.boxQty, item.pcsQty)}</span>

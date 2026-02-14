@@ -22,7 +22,7 @@ const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 interface ChartsViewProps {
   initialDailyData: { date: string; IN: number; OUT: number }[];
-  initialTopProducts: { sku: string; name: string; count: number }[];
+  initialTopProducts: { itemCode: string; description: string | null; count: number }[];
   initialStockByLocation: { location: string; value: number }[];
 }
 
@@ -95,13 +95,13 @@ export function ChartsView({
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" tick={{ fontSize: 10 }} />
                 <YAxis
-                  dataKey="sku"
+                  dataKey="itemCode"
                   type="category"
                   tick={{ fontSize: 10 }}
                   width={70}
                 />
                 <Tooltip
-                  formatter={(value, name, props) => [value, props.payload.name]}
+                  formatter={(value, name, props) => [value, props.payload.description]}
                 />
                 <Bar dataKey="count" fill="#8b5cf6" />
               </BarChart>

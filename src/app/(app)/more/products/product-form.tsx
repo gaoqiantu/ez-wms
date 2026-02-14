@@ -21,15 +21,11 @@ export function ProductForm({ product }: ProductFormProps) {
   const [isPending, startTransition] = useTransition();
 
   const [formData, setFormData] = useState({
-    sku: product?.sku || '',
-    name: product?.name || '',
-    brand: product?.brand || '',
-    series: product?.series || '',
-    spec: product?.spec || '',
-    color: product?.color || '',
+    itemCode: product?.itemCode || '',
+    description: product?.description || '',
+    priceEach: product?.priceEach || 0,
     unit: product?.unit || 'Pcs',
     pcsPerBox: product?.pcsPerBox || 1,
-    areaPerPcs: product?.areaPerPcs || 0,
   });
 
   const handleChange = (field: string, value: string | number) => {
@@ -39,8 +35,8 @@ export function ProductForm({ product }: ProductFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.sku || !formData.name) {
-      toast.error('SKU and Name are required');
+    if (!formData.itemCode) {
+      toast.error('Item Code is required');
       return;
     }
 
@@ -74,66 +70,37 @@ export function ProductForm({ product }: ProductFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="sku">{t('sku')} *</Label>
+        <Label htmlFor="itemCode">{t('itemCode')} *</Label>
         <Input
-          id="sku"
-          value={formData.sku}
-          onChange={(e) => handleChange('sku', e.target.value)}
-          placeholder="SKU-0001"
+          id="itemCode"
+          value={formData.itemCode}
+          onChange={(e) => handleChange('itemCode', e.target.value)}
+          placeholder="ITEM-0001"
           required
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="name">{t('name')} *</Label>
+        <Label htmlFor="description">{t('description')}</Label>
         <Input
-          id="name"
-          value={formData.name}
-          onChange={(e) => handleChange('name', e.target.value)}
-          required
+          id="description"
+          value={formData.description}
+          onChange={(e) => handleChange('description', e.target.value)}
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="brand">{t('brand')}</Label>
-          <Input
-            id="brand"
-            value={formData.brand}
-            onChange={(e) => handleChange('brand', e.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="series">{t('series')}</Label>
-          <Input
-            id="series"
-            value={formData.series}
-            onChange={(e) => handleChange('series', e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="spec">{t('spec')}</Label>
-          <Input
-            id="spec"
-            value={formData.spec}
-            onChange={(e) => handleChange('spec', e.target.value)}
-            placeholder="800x800"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="color">{t('color')}</Label>
-          <Input
-            id="color"
-            value={formData.color}
-            onChange={(e) => handleChange('color', e.target.value)}
-          />
-        </div>
-      </div>
-
       <div className="grid grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="priceEach">{t('priceEach')}</Label>
+          <Input
+            id="priceEach"
+            type="number"
+            step="0.01"
+            value={formData.priceEach}
+            onChange={(e) => handleChange('priceEach', parseFloat(e.target.value) || 0)}
+            min={0}
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="unit">{t('unit')}</Label>
           <Input
@@ -150,17 +117,6 @@ export function ProductForm({ product }: ProductFormProps) {
             value={formData.pcsPerBox}
             onChange={(e) => handleChange('pcsPerBox', parseInt(e.target.value) || 1)}
             min={1}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="areaPerPcs">{t('areaPerPcs')}</Label>
-          <Input
-            id="areaPerPcs"
-            type="number"
-            step="0.01"
-            value={formData.areaPerPcs}
-            onChange={(e) => handleChange('areaPerPcs', parseFloat(e.target.value) || 0)}
-            min={0}
           />
         </div>
       </div>

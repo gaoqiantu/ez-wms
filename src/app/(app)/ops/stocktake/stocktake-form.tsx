@@ -58,7 +58,7 @@ export function StocktakeForm({ locations }: StocktakeFormProps) {
   const handleLocationChange = async (newLocation: string) => {
     setLocation(newLocation);
     if (product) {
-      const result = await searchProductWithInventory(product.sku, newLocation);
+      const result = await searchProductWithInventory(product.itemCode, newLocation);
       setCurrentInventory(result?.inventory || null);
       // Pre-fill actual with system stock
       setActualBoxQty(result?.inventory?.boxQty || 0);

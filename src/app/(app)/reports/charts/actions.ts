@@ -54,13 +54,13 @@ export async function getTopProducts(limit: number = 10) {
 
   const results = await db
     .select({
-      sku: products.sku,
-      name: products.name,
+      itemCode: products.itemCode,
+      description: products.description,
       count: sql<number>`count(${transactions.id})`,
     })
     .from(transactions)
     .innerJoin(products, eq(transactions.productId, products.id))
-    .groupBy(products.id, products.sku, products.name)
+    .groupBy(products.id, products.itemCode, products.description)
     .orderBy(desc(sql`count(${transactions.id})`))
     .limit(limit);
 

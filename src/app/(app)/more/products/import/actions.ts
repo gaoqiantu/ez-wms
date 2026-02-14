@@ -8,19 +8,15 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 
 interface ImportProductRow {
-  sku: string;
-  name: string;
-  brand?: string;
-  series?: string;
-  spec?: string;
-  color?: string;
+  item_code: string;
+  description?: string;
+  price_each?: string;
   unit?: string;
   pcs_per_box?: string;
-  area_per_pcs?: string;
 }
 
 interface ImportInventoryRow {
-  sku: string;
+  item_code: string;
   location: string;
   box_qty: string;
   pcs_qty: string;
@@ -38,27 +34,23 @@ export async function importProducts(
   const results = { added: 0, updated: 0, skipped: 0, errors: [] as string[] };
 
   for (const row of rows) {
-    if (!row.sku || !row.name) {
-      results.errors.push(`Missing required field: ${row.sku || 'unknown'}`);
+    if (!row.item_code) {
+      results.errors.push(`Missing required field: ${row.item_code || 'unknown'}`);
       continue;
     }
 
     try {
       const existing = await db.query.products.findFirst({
-        where: eq(products.sku, row.sku),
+        where: eq(products.itemCode, row.item_code),
       });
 
       const productData = {
-        sku: row.sku,
-        name: row.name,
-        brand: row.brand || null,
-        series: row.series || null,
-        spec: row.spec || null,
-        color: row.color || null,
+        itemCode: row.item_code,
+        description: row.description || null,
+        priceEach: parseFloat(row.price_each || '0') || 0,
         unit: row.unit || 'Pcs',
         pcsPerBox: parseInt(row.pcs_per_box || '1') || 1,
-        areaPerPcs: parseFloat(row.area_per_pcs || '0') || null,
-        barcode: row.sku,
+        barcode: row.item_code,
       };
 
       if (existing) {
@@ -85,7 +77,7 @@ export async function importProducts(
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      results.errors.push(`${row.sku}: ${message}`);
+      results.errors.push(`${row.item_code}: ${message}`);
     }
   }
 
@@ -102,19 +94,19 @@ export async function importInventory(rows: ImportInventoryRow[]) {
   const results = { added: 0, updated: 0, skipped: 0, errors: [] as string[] };
 
   for (const row of rows) {
-    if (!row.sku || !row.location) {
-      results.errors.push(`Missing required field: ${row.sku || 'unknown'}`);
+    if (!row.item_code || !row.location) {
+      results.errors.push(`Missing required field: ${row.item_code || 'unknown'}`);
       continue;
     }
 
     try {
-      // Find product by SKU
+      // Find product by itemCode
       const product = await db.query.products.findFirst({
-        where: eq(products.sku, row.sku),
+        where: eq(products.itemCode, row.item_code),
       });
 
       if (!product) {
-        results.errors.push(`Product not found: ${row.sku}`);
+        results.errors.push(`Product not found: ${row.item_code}`);
         continue;
       }
 
@@ -161,7 +153,7 @@ export async function importInventory(rows: ImportInventoryRow[]) {
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      results.errors.push(`${row.sku}: ${message}`);
+      results.errors.push(`${row.item_code}: ${message}`);
     }
   }
 

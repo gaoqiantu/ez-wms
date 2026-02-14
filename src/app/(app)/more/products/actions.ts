@@ -15,9 +15,8 @@ export async function getProducts(search?: string) {
   if (search) {
     return db.query.products.findMany({
       where: or(
-        like(products.sku, `%${search}%`),
-        like(products.name, `%${search}%`),
-        like(products.brand, `%${search}%`)
+        like(products.itemCode, `%${search}%`),
+        like(products.description, `%${search}%`)
       ),
       orderBy: [desc(products.createdAt)],
     });
@@ -38,15 +37,11 @@ export async function getProduct(id: string) {
 }
 
 export async function createProduct(data: {
-  sku: string;
-  name: string;
-  brand?: string;
-  series?: string;
-  spec?: string;
-  color?: string;
+  itemCode: string;
+  description?: string;
+  priceEach?: number;
   unit?: string;
   pcsPerBox?: number;
-  areaPerPcs?: number;
 }) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -54,7 +49,7 @@ export async function createProduct(data: {
   }
 
   const id = nanoid();
-  const barcode = data.sku; // Use SKU as barcode/QR content
+  const barcode = data.itemCode; // Use itemCode as barcode/QR content
 
   await db.insert(products).values({
     id,
@@ -67,15 +62,11 @@ export async function createProduct(data: {
 }
 
 export async function updateProduct(id: string, data: {
-  sku?: string;
-  name?: string;
-  brand?: string;
-  series?: string;
-  spec?: string;
-  color?: string;
+  itemCode?: string;
+  description?: string;
+  priceEach?: number;
   unit?: string;
   pcsPerBox?: number;
-  areaPerPcs?: number;
 }) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -85,7 +76,7 @@ export async function updateProduct(id: string, data: {
   await db.update(products)
     .set({
       ...data,
-      barcode: data.sku, // Keep barcode in sync with SKU
+      barcode: data.itemCode, // Keep barcode in sync with itemCode
     })
     .where(eq(products.id, id));
 

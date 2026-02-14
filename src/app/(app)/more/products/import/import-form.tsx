@@ -21,19 +21,19 @@ type ImportType = 'products' | 'inventory';
 type ImportMode = 'add' | 'update' | 'upsert';
 
 const productsTemplate = {
-  headers: ['sku', 'name', 'brand', 'series', 'spec', 'color', 'unit', 'pcs_per_box', 'area_per_pcs'],
+  headers: ['item_code', 'description', 'price_each', 'unit', 'pcs_per_box'],
   rows: [
-    { sku: 'SKU-0001', name: 'Italian Carrara Marble', brand: 'MarbleCo', series: 'Premium', spec: '800x800', color: 'White', unit: 'Pcs', pcs_per_box: '6', area_per_pcs: '0.64' },
-    { sku: 'SKU-0002', name: 'Grey Granite Tile', brand: 'StoneTech', series: 'Standard', spec: '600x600', color: 'Dark Grey', unit: 'Pcs', pcs_per_box: '8', area_per_pcs: '0.36' },
+    { item_code: 'ITEM-0001', description: 'Italian Carrara Marble 800x800', price_each: '12.50', unit: 'Pcs', pcs_per_box: '6' },
+    { item_code: 'ITEM-0002', description: 'Grey Granite Tile 600x600', price_each: '8.75', unit: 'Pcs', pcs_per_box: '8' },
   ],
 };
 
 const inventoryTemplate = {
-  headers: ['sku', 'location', 'box_qty', 'pcs_qty'],
+  headers: ['item_code', 'location', 'box_qty', 'pcs_qty'],
   rows: [
-    { sku: 'SKU-0001', location: 'A-01', box_qty: '10', pcs_qty: '2' },
-    { sku: 'SKU-0001', location: 'A-02', box_qty: '5', pcs_qty: '0' },
-    { sku: 'SKU-0002', location: 'B-01', box_qty: '8', pcs_qty: '4' },
+    { item_code: 'ITEM-0001', location: 'A-01', box_qty: '10', pcs_qty: '2' },
+    { item_code: 'ITEM-0001', location: 'A-02', box_qty: '5', pcs_qty: '0' },
+    { item_code: 'ITEM-0002', location: 'B-01', box_qty: '8', pcs_qty: '4' },
   ],
 };
 

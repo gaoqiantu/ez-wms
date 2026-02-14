@@ -13,16 +13,13 @@ export async function getInventoryReport(search?: string, location?: string) {
   let query = db
     .select({
       id: inventory.id,
-      sku: products.sku,
-      name: products.name,
-      brand: products.brand,
-      spec: products.spec,
-      color: products.color,
+      itemCode: products.itemCode,
+      description: products.description,
+      priceEach: products.priceEach,
       location: inventory.location,
       boxQty: inventory.boxQty,
       pcsQty: inventory.pcsQty,
       pcsPerBox: products.pcsPerBox,
-      areaPerPcs: products.areaPerPcs,
     })
     .from(inventory)
     .innerJoin(products, eq(inventory.productId, products.id));
@@ -35,8 +32,8 @@ export async function getInventoryReport(search?: string, location?: string) {
   if (search) {
     const searchLower = search.toLowerCase();
     filtered = filtered.filter(r =>
-      r.sku.toLowerCase().includes(searchLower) ||
-      r.name.toLowerCase().includes(searchLower)
+      r.itemCode.toLowerCase().includes(searchLower) ||
+      (r.description || '').toLowerCase().includes(searchLower)
     );
   }
 
@@ -48,7 +45,6 @@ export async function getInventoryReport(search?: string, location?: string) {
   return filtered.map(row => ({
     ...row,
     totalPcs: (row.boxQty || 0) * (row.pcsPerBox || 1) + (row.pcsQty || 0),
-    totalArea: ((row.boxQty || 0) * (row.pcsPerBox || 1) + (row.pcsQty || 0)) * (row.areaPerPcs || 0),
   }));
 }
 

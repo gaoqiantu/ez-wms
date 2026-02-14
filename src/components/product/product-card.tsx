@@ -19,18 +19,11 @@ export function ProductCard({ product, inventory, showStock = true }: ProductCar
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm font-medium">{product.sku}</span>
-              {product.brand && (
-                <Badge variant="secondary" className="text-xs">
-                  {product.brand}
-                </Badge>
-              )}
+              <span className="font-mono text-sm font-medium">{product.itemCode}</span>
             </div>
-            <h3 className="font-medium">{product.name}</h3>
-            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-              {product.spec && <span>{product.spec}</span>}
-              {product.color && <span>• {product.color}</span>}
-              {product.series && <span>• {product.series}</span>}
+            <h3 className="font-medium">{product.description}</h3>
+            <div className="text-sm text-muted-foreground">
+              ${product.priceEach.toFixed(2)} / {product.unit}
             </div>
           </div>
         </div>

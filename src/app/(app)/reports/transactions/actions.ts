@@ -41,8 +41,8 @@ export async function getTransactions(filters: TransactionFilters = {}) {
       fromLocation: transactions.fromLocation,
       toLocation: transactions.toLocation,
       remark: transactions.remark,
-      sku: products.sku,
-      productName: products.name,
+      itemCode: products.itemCode,
+      productDescription: products.description,
       operatorName: users.name,
     })
     .from(transactions)
@@ -57,8 +57,8 @@ export async function getTransactions(filters: TransactionFilters = {}) {
   if (filters.search) {
     const searchLower = filters.search.toLowerCase();
     return results.filter(r =>
-      r.sku.toLowerCase().includes(searchLower) ||
-      r.productName.toLowerCase().includes(searchLower)
+      r.itemCode.toLowerCase().includes(searchLower) ||
+      (r.productDescription || '').toLowerCase().includes(searchLower)
     );
   }
 

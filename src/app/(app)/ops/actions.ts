@@ -12,9 +12,9 @@ export async function searchProduct(query: string) {
   }
   const result = await db.query.products.findFirst({
     where: or(
-      eq(products.sku, query),
+      eq(products.itemCode, query),
       eq(products.barcode, query),
-      like(products.name, `%${query}%`)
+      like(products.description, `%${query}%`)
     ),
   });
   return result;
@@ -72,9 +72,9 @@ export async function searchProductWithInventory(query: string, location?: strin
 
   const product = await db.query.products.findFirst({
     where: or(
-      eq(products.sku, query),
+      eq(products.itemCode, query),
       eq(products.barcode, query),
-      like(products.name, `%${query}%`)
+      like(products.description, `%${query}%`)
     ),
   });
 

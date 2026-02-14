@@ -18,16 +18,13 @@ import type { Location } from '@/db/schema';
 
 interface InventoryItem {
   id: string;
-  sku: string;
-  name: string;
-  brand: string | null;
-  spec: string | null;
-  color: string | null;
+  itemCode: string;
+  description: string | null;
+  priceEach: number;
   location: string;
   boxQty: number | null;
   pcsQty: number | null;
   totalPcs: number;
-  totalArea: number;
 }
 
 interface InventoryReportProps {
@@ -64,7 +61,7 @@ export function InventoryReport({ initialData, locations, summary }: InventoryRe
         <Card>
           <CardContent className="p-3 text-center">
             <div className="text-2xl font-bold">{summary.totalSku}</div>
-            <div className="text-xs text-muted-foreground">SKUs</div>
+            <div className="text-xs text-muted-foreground">Items</div>
           </CardContent>
         </Card>
         <Card>
@@ -124,13 +121,11 @@ export function InventoryReport({ initialData, locations, summary }: InventoryRe
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-semibold">{item.sku}</span>
+                      <span className="font-mono text-sm font-semibold">{item.itemCode}</span>
                       <Badge variant="outline">{item.location}</Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {item.name}
-                      {item.spec && ` - ${item.spec}`}
-                      {item.color && ` - ${item.color}`}
+                      {item.description}
                     </div>
                   </div>
                   <div className="text-right">
@@ -141,7 +136,6 @@ export function InventoryReport({ initialData, locations, summary }: InventoryRe
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {t('total')}: {item.totalPcs} pcs
-                      {item.totalArea > 0 && ` / ${item.totalArea.toFixed(2)} m\u00B2`}
                     </div>
                   </div>
                 </div>

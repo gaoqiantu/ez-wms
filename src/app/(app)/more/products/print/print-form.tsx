@@ -39,8 +39,8 @@ export function PrintForm({ products }: PrintFormProps) {
   const [isPrinting, setIsPrinting] = useState(false);
 
   const filteredProducts = products.filter(p =>
-    p.sku.toLowerCase().includes(search.toLowerCase()) ||
-    p.name.toLowerCase().includes(search.toLowerCase())
+    p.itemCode.toLowerCase().includes(search.toLowerCase()) ||
+    (p.description || '').toLowerCase().includes(search.toLowerCase())
   );
 
   const toggleSelect = (id: string) => {
@@ -68,7 +68,7 @@ export function PrintForm({ products }: PrintFormProps) {
       for (const id of selected) {
         const product = products.find(p => p.id === id);
         if (product && !qrCodes[id]) {
-          newQrCodes[id] = await generateQRDataURL(product.sku, 150);
+          newQrCodes[id] = await generateQRDataURL(product.itemCode, 150);
         }
       }
       if (Object.keys(newQrCodes).length > 0) {
@@ -123,9 +123,9 @@ export function PrintForm({ products }: PrintFormProps) {
             >
               <Checkbox checked={selected.has(product.id)} />
               <div className="flex-1 min-w-0">
-                <span className="font-mono text-sm">{product.sku}</span>
+                <span className="font-mono text-sm">{product.itemCode}</span>
                 <span className="ml-2 text-sm text-muted-foreground truncate">
-                  {product.name}
+                  {product.description}
                 </span>
               </div>
             </div>
@@ -212,7 +212,7 @@ export function PrintForm({ products }: PrintFormProps) {
                   {qrCodes[product.id] && (
                     <img
                       src={qrCodes[product.id]}
-                      alt={product.sku}
+                      alt={product.itemCode}
                       style={{
                         width: labelSize === 'small' ? '20mm' : labelSize === 'medium' ? '28mm' : '40mm',
                         height: labelSize === 'small' ? '20mm' : labelSize === 'medium' ? '28mm' : '40mm'
@@ -221,11 +221,10 @@ export function PrintForm({ products }: PrintFormProps) {
                   )}
                 </div>
                 <div className="flex-1 overflow-hidden">
-                  <div className="font-bold truncate">{product.sku}</div>
-                  {product.spec && <div className="truncate">{product.spec}</div>}
-                  {product.color && <div className="truncate">{product.color}</div>}
-                  {product.brand && <div className="truncate text-gray-600">{product.brand}</div>}
+                  <div className="font-bold truncate">{product.itemCode}</div>
+                  {product.description && <div className="truncate">{product.description}</div>}
                   {product.pcsPerBox && <div>{product.pcsPerBox}pcs/box</div>}
+                  <div className="truncate">${product.priceEach.toFixed(2)}</div>
                 </div>
               </div>
             </div>

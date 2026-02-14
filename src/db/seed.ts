@@ -1,5 +1,5 @@
 import { db } from './index';
-import { users, locations } from './schema';
+import { users, locations, settings } from './schema';
 import bcrypt from 'bcryptjs';
 import { nanoid } from 'nanoid';
 
@@ -32,6 +32,21 @@ async function seed() {
   }
 
   console.log('Created 5 sample locations');
+
+  // Create default settings
+  await db.insert(settings).values({
+    id: nanoid(),
+    key: 'invoice_next_number',
+    value: '1001',
+  }).onConflictDoNothing();
+
+  await db.insert(settings).values({
+    id: nanoid(),
+    key: 'terms_options',
+    value: JSON.stringify(['COD', 'Net 14', 'Net 30']),
+  }).onConflictDoNothing();
+
+  console.log('Created default settings');
   console.log('Seed complete!');
 }
 
