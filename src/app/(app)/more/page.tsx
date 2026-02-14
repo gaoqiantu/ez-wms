@@ -11,7 +11,9 @@ import {
   Settings,
   Download,
   Printer,
-  Upload
+  Upload,
+  Contact,
+  Receipt
 } from 'lucide-react';
 
 const menuItems = [
@@ -21,6 +23,20 @@ const menuItems = [
     labelKey: 'products',
     descKey: 'productsDesc',
     adminOnly: false
+  },
+  {
+    href: '/more/customers',
+    icon: Contact,
+    labelKey: 'customers',
+    descKey: 'customersDesc',
+    adminOnly: false,
+  },
+  {
+    href: '/more/invoices',
+    icon: Receipt,
+    labelKey: 'invoices',
+    descKey: 'invoicesDesc',
+    adminOnly: false,
   },
   {
     href: '/more/products/print',
