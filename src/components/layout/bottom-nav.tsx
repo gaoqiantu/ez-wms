@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Package, BarChart3, MoreHorizontal } from 'lucide-react';
+import { Home, Package, Receipt, BarChart3, MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', icon: Home, labelKey: 'dashboard' },
   { href: '/ops', icon: Package, labelKey: 'operations' },
+  { href: '/more/invoices', icon: Receipt, labelKey: 'invoices' },
   { href: '/reports', icon: BarChart3, labelKey: 'reports' },
   { href: '/more', icon: MoreHorizontal, labelKey: 'more' },
 ];
@@ -21,7 +22,9 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)]">
       <div className="flex h-16 items-center justify-around">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive = item.href === '/more'
+            ? pathname.startsWith('/more') && !pathname.startsWith('/more/invoices')
+            : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}

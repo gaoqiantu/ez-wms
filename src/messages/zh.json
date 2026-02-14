@@ -24,6 +24,7 @@
   "nav": {
     "dashboard": "仪表盘",
     "operations": "操作",
+    "invoices": "发票",
     "reports": "报表",
     "more": "更多"
   },

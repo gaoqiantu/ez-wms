@@ -8,31 +8,39 @@ import { auth } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 
 export async function getSetting(key: string): Promise<string | null> {
-  const session = await auth();
-  if (!session?.user?.id) return null;
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return null;
 
-  const result = await db.query.settings.findFirst({
-    where: eq(settings.key, key),
-  });
-  return result?.value ?? null;
+    const result = await db.query.settings.findFirst({
+      where: eq(settings.key, key),
+    });
+    return result?.value ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function setSetting(key: string, value: string) {
-  const session = await auth();
-  if (!session?.user?.id) return { error: 'Not authenticated' };
+  try {
+    const session = await auth();
+    if (!session?.user?.id) return { error: 'Not authenticated' };
 
-  const existing = await db.query.settings.findFirst({
-    where: eq(settings.key, key),
-  });
+    const existing = await db.query.settings.findFirst({
+      where: eq(settings.key, key),
+    });
 
-  if (existing) {
-    await db.update(settings).set({ value }).where(eq(settings.id, existing.id));
-  } else {
-    await db.insert(settings).values({ id: nanoid(), key, value });
+    if (existing) {
+      await db.update(settings).set({ value }).where(eq(settings.id, existing.id));
+    } else {
+      await db.insert(settings).values({ id: nanoid(), key, value });
+    }
+
+    revalidatePath('/more/settings');
+    return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Failed to save setting' };
   }
-
-  revalidatePath('/more/settings');
-  return { success: true };
 }
 
 export async function getComboboxOptions(key: string): Promise<string[]> {
