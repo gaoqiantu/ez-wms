@@ -4,8 +4,10 @@ import { CustomerList } from './customer-list';
 import { getCustomers } from './actions';
 
 export default async function CustomersPage() {
-  const t = await getTranslations('customers');
-  const customers = await getCustomers();
+  const [t, customers] = await Promise.all([
+    getTranslations('customers'),
+    getCustomers(),
+  ]);
 
   return (
     <>

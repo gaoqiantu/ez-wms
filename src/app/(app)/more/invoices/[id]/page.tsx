@@ -8,8 +8,10 @@ import { getLocations } from '../../../ops/actions';
 import { notFound } from 'next/navigation';
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const t = await getTranslations('invoices');
-  const { id } = await params;
+  const [t, { id }] = await Promise.all([
+    getTranslations('invoices'),
+    params,
+  ]);
   const invoice = await getInvoice(id);
 
   if (!invoice) {

@@ -5,7 +5,12 @@ import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
-import { QrScanner } from '@/components/scanner/qr-scanner';
+import dynamic from 'next/dynamic';
+
+const QrScanner = dynamic(
+  () => import('@/components/scanner/qr-scanner').then(mod => mod.QrScanner),
+  { ssr: false }
+);
 import { searchProduct } from '../../ops/actions';
 import { toast } from 'sonner';
 

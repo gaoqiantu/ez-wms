@@ -8,7 +8,7 @@
 
 <h1 align="center">
   <br />
-  📦 EZ-WMS
+  EZ-WMS
   <br />
   <sub>Easy Warehouse Management System</sub>
 </h1>
@@ -20,11 +20,11 @@
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#tech-stack">Tech Stack</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#deployment">Deployment</a> •
-  <a href="#screenshots">Screenshots</a>
+  <a href="#features">Features</a> &bull;
+  <a href="#tech-stack">Tech Stack</a> &bull;
+  <a href="#getting-started">Getting Started</a> &bull;
+  <a href="#deployment">Deployment</a> &bull;
+  <a href="#project-structure">Project Structure</a>
 </p>
 
 ---
@@ -33,61 +33,59 @@
 
 ### Core Operations
 
-| Operation | Color | Description |
-|-----------|-------|-------------|
-| 📥 **Inbound** | 🟢 Green | Receive new stock into warehouse |
-| 📤 **Outbound** | 🟠 Orange | Ship products out of warehouse |
-| 🔄 **Transfer** | 🔵 Blue | Move stock between locations |
-| 📋 **Stocktake** | 🟡 Amber | Verify and adjust inventory counts |
-| ↩️ **Return** | 🟣 Violet | Process customer returns |
+| Operation | Description |
+|-----------|-------------|
+| **Inbound** | Receive new stock into warehouse |
+| **Outbound** | Ship products out of warehouse |
+| **Transfer** | Move stock between locations |
+| **Stocktake** | Verify and adjust inventory counts |
+| **Return** | Process customer returns with reason tracking |
+
+### Invoice System
+
+- **Create & edit invoices** with auto-incrementing invoice numbers
+- **Bill To / Ship To** with inline customer search and auto-creation
+- **Line items** with QR scanner product lookup, quantity, and pricing
+- **Combobox fields** for Terms, Rep, Via, Ship (saved values auto-complete)
+- **Draft workflow** &mdash; save as draft, then complete with inventory deduction
+- **Printable invoices** &mdash; US Letter format with company header, terms & conditions, and signature area
+- **Atomic operations** &mdash; inventory deduction and invoice completion in a single database transaction
+
+### Customer Management
+
+- Full CRUD with search and pagination
+- Auto-created from invoice Bill To / Ship To fields
+- Contact name, address, phone, and email tracking
+
+### Configurable Settings
+
+- **Company information** &mdash; name, address, phone, email, and payment instructions displayed on printed invoices
+- **Invoice starting number** &mdash; configurable next invoice number
+- **Language** &mdash; switch between English and Chinese
 
 ### Key Capabilities
 
-- **QR Code Scanning** — Instant product lookup via camera or manual entry
-- **Real-time Inventory** — Track stock levels by location
-- **Multi-language** — Full support for English and 中文
-- **Dark Mode** — Easy on the eyes, day or night
-- **Mobile-first** — Optimized for warehouse floor use
-- **Reports & Charts** — Visual insights into your operations
-- **Excel Import/Export** — Bulk product management
-- **Barcode Generation** — Print product labels with QR codes
-
-### Mobile UX
-
-- 📱 **Touch-optimized** — 48px+ tap targets for gloved hands
-- 🔒 **Safe areas** — iPhone notch & home indicator support
-- ⚡ **Instant feedback** — Loading spinners & haptic-style animations
-- 🎨 **Color-coded actions** — Visual operation distinction
+- **QR Code Scanning** &mdash; instant product lookup via camera or manual search
+- **Real-time Inventory** &mdash; track stock levels by location (boxes + loose pieces)
+- **Multi-language** &mdash; full support for English and Chinese
+- **Dark Mode** &mdash; system-aware theme switching
+- **Mobile-first** &mdash; optimized for warehouse floor use with touch-friendly targets
+- **Reports & Charts** &mdash; daily movement, top products, stock by location
+- **Excel Import/Export** &mdash; bulk product and inventory management
+- **Label Generation** &mdash; print QR code labels for products
+- **User Management** &mdash; admin and operator roles
+- **Location Management** &mdash; configure warehouse storage locations
 
 ---
 
 ## Tech Stack
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        FRONTEND                              │
-├─────────────────────────────────────────────────────────────┤
-│  Next.js 15      App Router, Server Components, RSC         │
-│  React 19        Latest with Compiler optimizations         │
-│  Tailwind CSS 4  Utility-first styling                      │
-│  Radix UI        Accessible component primitives            │
-│  Recharts        Data visualization                         │
-│  Lucide          Beautiful icons                            │
-├─────────────────────────────────────────────────────────────┤
-│                        BACKEND                               │
-├─────────────────────────────────────────────────────────────┤
-│  Server Actions  Type-safe mutations                        │
-│  Auth.js v5      Secure authentication                      │
-│  Drizzle ORM     Type-safe database queries                 │
-│  Turso           Edge SQLite database                       │
-├─────────────────────────────────────────────────────────────┤
-│                        TOOLING                               │
-├─────────────────────────────────────────────────────────────┤
-│  TypeScript 5    End-to-end type safety                     │
-│  next-intl       Internationalization                       │
-│  html5-qrcode    Camera-based scanning                      │
-│  qrcode          Label generation                           │
-└─────────────────────────────────────────────────────────────┘
+Frontend          Next.js 15 (App Router, RSC), React 19, Tailwind CSS 4
+UI Components     Radix UI primitives (shadcn/ui), Lucide icons, Recharts
+Backend           Server Actions, Auth.js v5, Drizzle ORM
+Database          Turso (edge SQLite) / local libSQL for development
+Tooling           TypeScript 5, next-intl (i18n), html5-qrcode, nanoid
 ```
 
 ---
@@ -141,13 +139,9 @@ pnpm db:seed
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) — you're ready to go!
+Open [http://localhost:3000](http://localhost:3000).
 
-### Default Credentials
-
-After seeding:
-- **Username:** `admin`
-- **Password:** `admin123`
+**Default credentials** (after seeding): `admin` / `admin123`
 
 ---
 
@@ -175,25 +169,17 @@ TURSO_AUTH_TOKEN=local-dev-token
 
 1. Push your code to GitHub
 2. Import project in [Vercel](https://vercel.com)
-3. Add environment variables:
-   - `TURSO_DATABASE_URL`
-   - `TURSO_AUTH_TOKEN`
-   - `AUTH_SECRET`
-4. Deploy!
+3. Add environment variables: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `AUTH_SECRET`
+4. Deploy
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/gaoqiantu/ez-wms)
 
 ### Turso Database Setup
 
 ```bash
-# Install Turso CLI
 brew install tursodatabase/tap/turso
-
-# Login & create database
 turso auth login
 turso db create ez-wms
-
-# Get credentials
 turso db show ez-wms --url
 turso db tokens create ez-wms
 ```
@@ -205,25 +191,49 @@ turso db tokens create ez-wms
 ```
 ez-wms/
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── (app)/              # Authenticated routes
-│   │   │   ├── dashboard/      # Home dashboard
-│   │   │   ├── ops/            # Operations (inbound, outbound, etc.)
-│   │   │   ├── reports/        # Analytics & reports
-│   │   │   └── more/           # Settings, products, users
-│   │   ├── api/                # API routes
-│   │   └── login/              # Authentication
+│   ├── app/                        # Next.js App Router
+│   │   ├── (app)/                  # Authenticated routes
+│   │   │   ├── dashboard/          # Home dashboard
+│   │   │   ├── ops/                # Operations (inbound, outbound, etc.)
+│   │   │   ├── reports/            # Analytics, charts, transaction history
+│   │   │   └── more/               # Settings & management pages
+│   │   │       ├── products/       # Product catalog CRUD + import/export
+│   │   │       ├── customers/      # Customer management
+│   │   │       ├── invoices/       # Invoice system (create, edit, print)
+│   │   │       ├── locations/      # Warehouse locations
+│   │   │       ├── documents/      # PO, Sales Orders, RMA
+│   │   │       ├── users/          # User management
+│   │   │       └── settings/       # App configuration
+│   │   ├── api/                    # API routes (auth)
+│   │   └── login/                  # Authentication page
 │   ├── components/
-│   │   ├── ui/                 # Radix UI primitives
-│   │   ├── layout/             # Header, BottomNav
-│   │   ├── scanner/            # QR code scanner
-│   │   └── form/               # Form components
-│   ├── db/                     # Drizzle schema & config
-│   ├── lib/                    # Utilities & auth
-│   └── messages/               # i18n translations
-├── drizzle/                    # Database migrations
-└── public/                     # Static assets
+│   │   ├── ui/                     # Radix UI primitives (shadcn/ui)
+│   │   ├── layout/                 # Header, BottomNav
+│   │   ├── scanner/                # QR code scanner
+│   │   └── form/                   # Combobox, form components
+│   ├── db/                         # Drizzle schema & config
+│   ├── lib/                        # Utilities, auth, inventory calculations
+│   └── messages/                   # i18n translations (en, zh)
+├── drizzle/                        # Database migrations
+└── public/                         # Static assets
 ```
+
+---
+
+## Database Schema
+
+The system uses 7 core tables:
+
+| Table | Purpose |
+|-------|---------|
+| `users` | Authentication and user roles |
+| `products` | Product catalog (itemCode, description, priceEach, pcsPerBox) |
+| `inventory` | Stock levels by product and location (boxes + pieces) |
+| `transactions` | Audit log of all inventory movements |
+| `customers` | Customer directory for invoices |
+| `invoices` | Invoice headers with Bill To / Ship To snapshots |
+| `invoice_items` | Line items linked to invoices and products |
+| `settings` | Key-value configuration (invoice numbers, company info, combobox options) |
 
 ---
 
@@ -243,58 +253,23 @@ ez-wms/
 
 ---
 
-## Screenshots
-
-<table>
-  <tr>
-    <td align="center">
-      <strong>Dashboard</strong><br />
-      <sub>Quick stats & recent activity</sub>
-    </td>
-    <td align="center">
-      <strong>Operations</strong><br />
-      <sub>Color-coded action cards</sub>
-    </td>
-    <td align="center">
-      <strong>Scanner</strong><br />
-      <sub>QR/Barcode scanning</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <strong>Inventory</strong><br />
-      <sub>Stock by location</sub>
-    </td>
-    <td align="center">
-      <strong>Reports</strong><br />
-      <sub>Charts & analytics</sub>
-    </td>
-    <td align="center">
-      <strong>Dark Mode</strong><br />
-      <sub>Easy on the eyes</sub>
-    </td>
-  </tr>
-</table>
-
----
-
 ## Internationalization
 
-EZ-WMS supports multiple languages out of the box:
+EZ-WMS supports multiple languages:
 
-- 🇺🇸 English
-- 🇨🇳 中文 (Chinese)
+- English
+- Chinese
 
-Toggle language from the header icon. Add more languages by creating new files in `src/messages/`.
+Toggle from Settings. Add more languages by creating new files in `src/messages/`.
 
 ---
 
 ## License
 
-MIT © [gaoqiantu](https://github.com/gaoqiantu)
+MIT
 
 ---
 
 <p align="center">
-  <sub>Built with ❤️ for warehouse teams everywhere</sub>
+  <sub>Built for warehouse teams everywhere</sub>
 </p>

@@ -109,7 +109,7 @@ export function InvoicePrint({ invoice, companyInfo }: InvoicePrintProps) {
           </thead>
           <tbody>
             {invoice.items
-              .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+              .toSorted((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
               .map((item) => (
               <tr key={item.id}>
                 <td className="border border-black p-2">{item.quantity}</td>

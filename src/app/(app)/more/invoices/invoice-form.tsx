@@ -75,7 +75,7 @@ export function InvoiceForm({
   const [rep, setRep] = useState(invoice?.rep || '');
   const [via, setVia] = useState(invoice?.via || '');
   const [ship, setShip] = useState(invoice?.ship || '');
-  const [items, setItems] = useState<LineItem[]>(
+  const [items, setItems] = useState<LineItem[]>(() =>
     invoice?.items?.map(item => ({
       _key: generateItemKey(),
       productId: item.productId || undefined,
@@ -83,7 +83,7 @@ export function InvoiceForm({
       description: item.description || '',
       priceEach: item.priceEach,
       quantity: item.quantity,
-    })) || []
+    })) ?? []
   );
   const [remark, setRemark] = useState(invoice?.remark || '');
 
