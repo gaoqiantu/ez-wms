@@ -20,7 +20,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle className="text-center text-2xl">ez-wms</CardTitle>
+        <CardTitle className="text-center text-2xl">WMS</CardTitle>
       </CardHeader>
       <CardContent>
         <form action={formAction} className="space-y-4">

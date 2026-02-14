@@ -217,7 +217,7 @@ export function SettingsForm({ userName, invoiceStartNumber, companyInfo: initia
           </div>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
-          <p><strong>ez-wms</strong></p>
+          <p><strong>WMS</strong></p>
           <p>{t('version')}: 1.0.0</p>
           <p className="mt-2">{t('copyright')}</p>
         </CardContent>
