@@ -1,19 +1,23 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Printer } from 'lucide-react';
 import type { Invoice, InvoiceItem } from '@/db/schema';
 
-interface InvoicePrintProps {
-  invoice: Invoice & { items: InvoiceItem[] };
+interface CompanyInfo {
+  name: string;
+  address: string;
+  phone: string;
+  email: string;
+  paymentInfo: string;
 }
 
-export function InvoicePrint({ invoice }: InvoicePrintProps) {
-  useEffect(() => {
-    // Auto-trigger print on load (optional, user can also click button)
-  }, []);
+interface InvoicePrintProps {
+  invoice: Invoice & { items: InvoiceItem[] };
+  companyInfo: CompanyInfo;
+}
 
+export function InvoicePrint({ invoice, companyInfo }: InvoicePrintProps) {
   const handlePrint = () => {
     window.print();
   };
@@ -39,12 +43,14 @@ export function InvoicePrint({ invoice }: InvoicePrintProps) {
       <div className="print-invoice mx-auto max-w-[8.5in] bg-white p-8 text-black text-[13px] leading-tight">
 
         {/* Company Header */}
-        <div className="text-center border-b-2 border-black pb-3 mb-4">
-          <h1 className="text-2xl font-bold tracking-wide">CitiQuartz Atlanta INC</h1>
-          <p className="text-sm">6654 Jimmy Carter Blvd STE B, Peachtree Corners, GA 30071</p>
-          <p className="text-sm">Tel: 770-560-5858 / 770-618-9889</p>
-          <p className="text-sm">Email: citiquartzatlanta@gmail.com</p>
-        </div>
+        {companyInfo.name && (
+          <div className="text-center border-b-2 border-black pb-3 mb-4">
+            <h1 className="text-2xl font-bold tracking-wide">{companyInfo.name}</h1>
+            {companyInfo.address && <p className="text-sm">{companyInfo.address}</p>}
+            {companyInfo.phone && <p className="text-sm">Tel: {companyInfo.phone}</p>}
+            {companyInfo.email && <p className="text-sm">Email: {companyInfo.email}</p>}
+          </div>
+        )}
 
         {/* Invoice Title */}
         <div className="text-center mb-4">
@@ -140,11 +146,14 @@ export function InvoicePrint({ invoice }: InvoicePrintProps) {
         )}
 
         {/* Payment Instructions */}
-        <div className="border border-black p-3 mb-4">
-          <p className="font-bold mb-1">Payment Instructions:</p>
-          <p>Checks Payable To: <strong>CitiQuartz Atlanta INC</strong></p>
-          <p>Zelle Payment: <strong>770-560-5858</strong></p>
-        </div>
+        {companyInfo.paymentInfo && (
+          <div className="border border-black p-3 mb-4">
+            <p className="font-bold mb-1">Payment Instructions:</p>
+            {companyInfo.paymentInfo.split('\n').map((line, i) => (
+              <p key={i}>{line}</p>
+            ))}
+          </div>
+        )}
 
         {/* Terms & Conditions */}
         <div className="border border-black p-3 mb-4 text-xs">

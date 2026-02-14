@@ -1,19 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Loader2 } from 'lucide-react';
 import { getInvoices } from './actions';
 import type { Invoice } from '@/db/schema';
 
 interface InvoiceListProps {
   initialInvoices: Invoice[];
 }
+
+const PAGE_SIZE = 20;
 
 export function InvoiceList({ initialInvoices }: InvoiceListProps) {
   const t = useTranslations('invoices');
@@ -22,20 +24,32 @@ export function InvoiceList({ initialInvoices }: InvoiceListProps) {
   const [invoices, setInvoices] = useState(initialInvoices);
   const [search, setSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [hasMore, setHasMore] = useState(initialInvoices.length >= PAGE_SIZE);
+  const [isLoadingMore, startLoadMore] = useTransition();
 
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (search) {
         setIsSearching(true);
-        const results = await getInvoices(search);
+        const results = await getInvoices(search, PAGE_SIZE, 0);
         setInvoices(results);
+        setHasMore(results.length >= PAGE_SIZE);
         setIsSearching(false);
       } else {
         setInvoices(initialInvoices);
+        setHasMore(initialInvoices.length >= PAGE_SIZE);
       }
     }, 300);
     return () => clearTimeout(timer);
   }, [search, initialInvoices]);
+
+  const handleLoadMore = () => {
+    startLoadMore(async () => {
+      const more = await getInvoices(search || undefined, PAGE_SIZE, invoices.length);
+      setInvoices(prev => [...prev, ...more]);
+      setHasMore(more.length >= PAGE_SIZE);
+    });
+  };
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString();
@@ -105,6 +119,20 @@ export function InvoiceList({ initialInvoices }: InvoiceListProps) {
               </Card>
             </Link>
           ))}
+
+          {hasMore && (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              {tCommon('loadMore')}
+            </Button>
+          )}
         </div>
       )}
     </div>

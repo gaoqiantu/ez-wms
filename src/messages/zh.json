@@ -10,7 +10,8 @@
     "loading": "加载中...",
     "noData": "暂无数据",
     "success": "成功",
-    "error": "错误"
+    "error": "错误",
+    "loadMore": "加载更多"
   },
   "auth": {
     "login": "登录",
@@ -222,7 +223,14 @@
     "copyright": "轻量级瓷砖/台面店仓库管理系统",
     "logoutConfirm": "确定要退出登录吗？",
     "invoiceStartNumber": "发票起始编号",
-    "invoiceStartNumberDesc": "下一个将分配的发票编号"
+    "invoiceStartNumberDesc": "下一个将分配的发票编号",
+    "companyInfo": "公司信息",
+    "companyInfoDesc": "发票上显示的公司信息",
+    "companyName": "公司名称",
+    "companyAddress": "地址",
+    "companyPhone": "电话",
+    "companyEmail": "邮箱",
+    "paymentInfo": "付款说明（每行一条）"
   },
   "locations": {
     "add": "添加",
@@ -276,6 +284,9 @@
     "deleteConfirm": "确定要删除此发票吗？",
     "insufficientStock": "部分商品库存不足",
     "selectCustomer": "选择或输入客户...",
-    "newCustomer": "新客户"
+    "newCustomer": "新客户",
+    "billToRequired": "账单方名称不能为空",
+    "addAtLeastOneItem": "请添加至少一个项目",
+    "quantityRequired": "所有项目数量必须大于等于1"
   }
 }

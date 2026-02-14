@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,8 @@ import { QrScanner } from '@/components/scanner/qr-scanner';
 import { searchProduct } from '../../ops/actions';
 import { toast } from 'sonner';
 
-interface LineItem {
+export interface LineItem {
+  _key: string;
   productId?: string;
   itemCode: string;
   description: string;
@@ -22,14 +23,20 @@ interface LineItemsProps {
   onChange: (items: LineItem[]) => void;
 }
 
+let keyCounter = 0;
+export function generateItemKey() {
+  return `item-${Date.now()}-${++keyCounter}`;
+}
+
 export function LineItems({ items, onChange }: LineItemsProps) {
   const t = useTranslations('invoices');
   const [showScanner, setShowScanner] = useState(false);
 
-  const handleScan = async (value: string) => {
+  const handleScan = useCallback(async (value: string) => {
     const product = await searchProduct(value);
     if (product) {
       onChange([...items, {
+        _key: generateItemKey(),
         productId: product.id,
         itemCode: product.itemCode,
         description: product.description || '',
@@ -40,7 +47,7 @@ export function LineItems({ items, onChange }: LineItemsProps) {
     } else {
       toast.error(t('productNotFound') || 'Product not found');
     }
-  };
+  }, [items, onChange, t]);
 
   const handleRemove = (index: number) => {
     onChange(items.filter((_, i) => i !== index));
@@ -76,7 +83,7 @@ export function LineItems({ items, onChange }: LineItemsProps) {
       {items.length > 0 && (
         <div className="space-y-2">
           {items.map((item, index) => (
-            <div key={index} className="rounded-lg border p-3 space-y-2">
+            <div key={item._key} className="rounded-lg border p-3 space-y-2">
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-1">
                   <div className="font-mono text-sm font-medium">{item.itemCode}</div>
@@ -100,8 +107,8 @@ export function LineItems({ items, onChange }: LineItemsProps) {
                   <Input
                     type="number"
                     value={item.quantity}
-                    onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 0)}
-                    min={0}
+                    onChange={(e) => handleItemChange(index, 'quantity', Math.max(1, parseInt(e.target.value) || 1))}
+                    min={1}
                     className="h-8 text-sm"
                   />
                 </div>
@@ -111,7 +118,7 @@ export function LineItems({ items, onChange }: LineItemsProps) {
                     type="number"
                     step="0.01"
                     value={item.priceEach}
-                    onChange={(e) => handleItemChange(index, 'priceEach', parseFloat(e.target.value) || 0)}
+                    onChange={(e) => handleItemChange(index, 'priceEach', Math.max(0, parseFloat(e.target.value) || 0))}
                     min={0}
                     className="h-8 text-sm"
                   />

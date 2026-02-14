@@ -7,7 +7,9 @@ import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 
-export async function getCustomers(search?: string) {
+const PAGE_SIZE = 20;
+
+export async function getCustomers(search?: string, limit = PAGE_SIZE, offset = 0) {
   const session = await auth();
   if (!session?.user?.id) return [];
 
@@ -18,10 +20,14 @@ export async function getCustomers(search?: string) {
         like(customers.contactName, `%${search}%`)
       ),
       orderBy: [desc(customers.createdAt)],
+      limit,
+      offset,
     });
   }
   return db.query.customers.findMany({
     orderBy: [desc(customers.createdAt)],
+    limit,
+    offset,
   });
 }
 

@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Combobox } from '@/components/form/combobox';
 import { CustomerSelect } from './customer-select';
-import { LineItems } from './line-items';
+import { LineItems, generateItemKey } from './line-items';
+import type { LineItem } from './line-items';
 import { createInvoice, updateInvoice } from './actions';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
@@ -74,14 +75,9 @@ export function InvoiceForm({
   const [rep, setRep] = useState(invoice?.rep || '');
   const [via, setVia] = useState(invoice?.via || '');
   const [ship, setShip] = useState(invoice?.ship || '');
-  const [items, setItems] = useState<{
-    productId?: string;
-    itemCode: string;
-    description: string;
-    priceEach: number;
-    quantity: number;
-  }[]>(
+  const [items, setItems] = useState<LineItem[]>(
     invoice?.items?.map(item => ({
+      _key: generateItemKey(),
       productId: item.productId || undefined,
       itemCode: item.itemCode,
       description: item.description || '',
@@ -92,13 +88,28 @@ export function InvoiceForm({
   const [remark, setRemark] = useState(invoice?.remark || '');
 
   const handleSubmit = () => {
+    // Validate billTo name
+    if (!billTo.name.trim()) {
+      toast.error(t('billToRequired'));
+      return;
+    }
+
     if (items.length === 0) {
-      toast.error('Please add at least one item');
+      toast.error(t('addAtLeastOneItem'));
+      return;
+    }
+
+    // Validate all items have quantity >= 1
+    if (items.some(item => item.quantity < 1)) {
+      toast.error(t('quantityRequired'));
       return;
     }
 
     startTransition(async () => {
       try {
+        // Strip _key before sending to server
+        const serverItems = items.map(({ _key, ...rest }) => rest);
+
         const data = {
           date,
           poNumber: poNumber || undefined,
@@ -108,7 +119,7 @@ export function InvoiceForm({
           rep: rep || undefined,
           via: via || undefined,
           ship: ship || undefined,
-          items,
+          items: serverItems,
           remark: remark || undefined,
         };
 

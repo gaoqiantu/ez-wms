@@ -1,18 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Loader2 } from 'lucide-react';
 import { getCustomers } from './actions';
 import type { Customer } from '@/db/schema';
 
 interface CustomerListProps {
   initialCustomers: Customer[];
 }
+
+const PAGE_SIZE = 20;
 
 export function CustomerList({ initialCustomers }: CustomerListProps) {
   const t = useTranslations('customers');
@@ -21,20 +23,32 @@ export function CustomerList({ initialCustomers }: CustomerListProps) {
   const [customers, setCustomers] = useState(initialCustomers);
   const [search, setSearch] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [hasMore, setHasMore] = useState(initialCustomers.length >= PAGE_SIZE);
+  const [isLoadingMore, startLoadMore] = useTransition();
 
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (search) {
         setIsSearching(true);
-        const results = await getCustomers(search);
+        const results = await getCustomers(search, PAGE_SIZE, 0);
         setCustomers(results);
+        setHasMore(results.length >= PAGE_SIZE);
         setIsSearching(false);
       } else {
         setCustomers(initialCustomers);
+        setHasMore(initialCustomers.length >= PAGE_SIZE);
       }
     }, 300);
     return () => clearTimeout(timer);
   }, [search, initialCustomers]);
+
+  const handleLoadMore = () => {
+    startLoadMore(async () => {
+      const more = await getCustomers(search || undefined, PAGE_SIZE, customers.length);
+      setCustomers(prev => [...prev, ...more]);
+      setHasMore(more.length >= PAGE_SIZE);
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -83,6 +97,20 @@ export function CustomerList({ initialCustomers }: CustomerListProps) {
               </Card>
             </Link>
           ))}
+
+          {hasMore && (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              {tCommon('loadMore')}
+            </Button>
+          )}
         </div>
       )}
     </div>

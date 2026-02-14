@@ -4,10 +4,30 @@ import { SettingsForm } from './settings-form';
 import { auth } from '@/lib/auth';
 import { getSetting } from './actions';
 
+const DEFAULT_COMPANY_INFO = {
+  name: '',
+  address: '',
+  phone: '',
+  email: '',
+  paymentInfo: '',
+};
+
 export default async function SettingsPage() {
   const t = await getTranslations('more');
-  const session = await auth();
-  const invoiceStartNumber = await getSetting('invoice_next_number') || '1001';
+  const [session, invoiceStartNumber, companyInfoRaw] = await Promise.all([
+    auth(),
+    getSetting('invoice_next_number'),
+    getSetting('company_info'),
+  ]);
+
+  let companyInfo = DEFAULT_COMPANY_INFO;
+  if (companyInfoRaw) {
+    try {
+      companyInfo = { ...DEFAULT_COMPANY_INFO, ...JSON.parse(companyInfoRaw) };
+    } catch {
+      // Use defaults
+    }
+  }
 
   return (
     <>
@@ -15,7 +35,8 @@ export default async function SettingsPage() {
       <div className="p-4">
         <SettingsForm
           userName={session?.user?.name || ''}
-          invoiceStartNumber={invoiceStartNumber}
+          invoiceStartNumber={invoiceStartNumber || '1001'}
+          companyInfo={companyInfo}
         />
       </div>
     </>

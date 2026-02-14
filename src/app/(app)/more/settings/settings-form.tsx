@@ -7,6 +7,7 @@ import { signOut } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import {
   Select,
@@ -15,23 +16,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Globe, LogOut, Info, User, Receipt, Loader2 } from 'lucide-react';
+import { Globe, LogOut, Info, User, Receipt, Building2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { setSetting } from './actions';
+
+interface CompanyInfo {
+  name: string;
+  address: string;
+  phone: string;
+  email: string;
+  paymentInfo: string;
+}
 
 interface SettingsFormProps {
   userName: string;
   invoiceStartNumber: string;
+  companyInfo: CompanyInfo;
 }
 
-export function SettingsForm({ userName, invoiceStartNumber }: SettingsFormProps) {
+export function SettingsForm({ userName, invoiceStartNumber, companyInfo: initialCompanyInfo }: SettingsFormProps) {
   const t = useTranslations('settings');
   const tAuth = useTranslations('auth');
   const tCommon = useTranslations('common');
   const router = useRouter();
 
-  const [isPending, startTransition] = useTransition();
+  const [isPendingInvoice, startInvoiceTransition] = useTransition();
+  const [isPendingCompany, startCompanyTransition] = useTransition();
   const [invoiceNumber, setInvoiceNumber] = useState(invoiceStartNumber);
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(initialCompanyInfo);
 
   const [currentLocale, setCurrentLocale] = useState(() => {
     if (typeof document !== 'undefined') {
@@ -50,8 +62,19 @@ export function SettingsForm({ userName, invoiceStartNumber }: SettingsFormProps
   };
 
   const handleSaveInvoiceNumber = () => {
-    startTransition(async () => {
+    startInvoiceTransition(async () => {
       const result = await setSetting('invoice_next_number', invoiceNumber);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(tCommon('success'));
+      }
+    });
+  };
+
+  const handleSaveCompanyInfo = () => {
+    startCompanyTransition(async () => {
+      const result = await setSetting('company_info', JSON.stringify(companyInfo));
       if (result.error) {
         toast.error(result.error);
       } else {
@@ -105,6 +128,53 @@ export function SettingsForm({ userName, invoiceStartNumber }: SettingsFormProps
         </CardContent>
       </Card>
 
+      {/* Company Info */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Building2 className="h-5 w-5" />
+            <div>
+              <CardTitle className="text-base">{t('companyInfo')}</CardTitle>
+              <CardDescription>{t('companyInfoDesc')}</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Input
+            value={companyInfo.name}
+            onChange={(e) => setCompanyInfo(prev => ({ ...prev, name: e.target.value }))}
+            placeholder={t('companyName')}
+          />
+          <Input
+            value={companyInfo.address}
+            onChange={(e) => setCompanyInfo(prev => ({ ...prev, address: e.target.value }))}
+            placeholder={t('companyAddress')}
+          />
+          <Input
+            value={companyInfo.phone}
+            onChange={(e) => setCompanyInfo(prev => ({ ...prev, phone: e.target.value }))}
+            placeholder={t('companyPhone')}
+          />
+          <Input
+            value={companyInfo.email}
+            onChange={(e) => setCompanyInfo(prev => ({ ...prev, email: e.target.value }))}
+            placeholder={t('companyEmail')}
+          />
+          <Textarea
+            value={companyInfo.paymentInfo}
+            onChange={(e) => setCompanyInfo(prev => ({ ...prev, paymentInfo: e.target.value }))}
+            placeholder={t('paymentInfo')}
+            rows={3}
+          />
+          <Button onClick={handleSaveCompanyInfo} disabled={isPendingCompany} className="w-full">
+            {isPendingCompany ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            {tCommon('save')}
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Invoice Settings */}
       <Card>
         <CardHeader>
@@ -124,8 +194,8 @@ export function SettingsForm({ userName, invoiceStartNumber }: SettingsFormProps
               value={invoiceNumber}
               onChange={(e) => setInvoiceNumber(e.target.value)}
             />
-            <Button onClick={handleSaveInvoiceNumber} disabled={isPending}>
-              {isPending ? (
+            <Button onClick={handleSaveInvoiceNumber} disabled={isPendingInvoice}>
+              {isPendingInvoice ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 tCommon('save')

@@ -9,8 +9,10 @@ import { auth } from '@/lib/auth';
 import { addComboboxOption } from '../settings/actions';
 import { calculateOutbound } from '@/lib/inventory';
 
-// 1. getInvoices(search?) - list invoices with DB-level search
-export async function getInvoices(search?: string) {
+// 1. getInvoices(search?, limit?, offset?) - list invoices with DB-level search + pagination
+const PAGE_SIZE = 20;
+
+export async function getInvoices(search?: string, limit = PAGE_SIZE, offset = 0) {
   const session = await auth();
   if (!session?.user?.id) return [];
 
@@ -21,11 +23,15 @@ export async function getInvoices(search?: string) {
         like(invoices.billToName, q),
       ),
       orderBy: [desc(invoices.createdAt)],
+      limit,
+      offset,
     });
   }
 
   return db.query.invoices.findMany({
     orderBy: [desc(invoices.createdAt)],
+    limit,
+    offset,
   });
 }
 
