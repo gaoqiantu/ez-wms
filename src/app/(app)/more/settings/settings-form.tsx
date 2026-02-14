@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { signOut } from 'next-auth/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import {
   Select,
@@ -14,16 +15,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Globe, LogOut, Info, User } from 'lucide-react';
+import { Globe, LogOut, Info, User, Receipt, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { setSetting } from './actions';
 
 interface SettingsFormProps {
   userName: string;
+  invoiceStartNumber: string;
 }
 
-export function SettingsForm({ userName }: SettingsFormProps) {
+export function SettingsForm({ userName, invoiceStartNumber }: SettingsFormProps) {
   const t = useTranslations('settings');
   const tAuth = useTranslations('auth');
+  const tCommon = useTranslations('common');
   const router = useRouter();
+
+  const [isPending, startTransition] = useTransition();
+  const [invoiceNumber, setInvoiceNumber] = useState(invoiceStartNumber);
 
   const [currentLocale, setCurrentLocale] = useState(() => {
     if (typeof document !== 'undefined') {
@@ -39,6 +47,17 @@ export function SettingsForm({ userName }: SettingsFormProps) {
     document.cookie = `locale=${newLocale}; path=/; max-age=31536000`;
     setCurrentLocale(newLocale);
     router.refresh();
+  };
+
+  const handleSaveInvoiceNumber = () => {
+    startTransition(async () => {
+      const result = await setSetting('invoice_next_number', invoiceNumber);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(tCommon('success'));
+      }
+    });
   };
 
   const handleLogout = async () => {
@@ -83,6 +102,36 @@ export function SettingsForm({ userName }: SettingsFormProps) {
               <SelectItem value="zh">中文</SelectItem>
             </SelectContent>
           </Select>
+        </CardContent>
+      </Card>
+
+      {/* Invoice Settings */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <Receipt className="h-5 w-5" />
+            <div>
+              <CardTitle className="text-base">{t('invoiceStartNumber')}</CardTitle>
+              <CardDescription>{t('invoiceStartNumberDesc')}</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              min="1"
+              value={invoiceNumber}
+              onChange={(e) => setInvoiceNumber(e.target.value)}
+            />
+            <Button onClick={handleSaveInvoiceNumber} disabled={isPending}>
+              {isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                tCommon('save')
+              )}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
