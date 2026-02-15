@@ -84,6 +84,8 @@ export const customers = sqliteTable('customers', {
   name: text('name').notNull(),
   contactName: text('contact_name'),
   address: text('address'),
+  billToAddress: text('bill_to_address'),
+  shipToAddress: text('ship_to_address'),
   phone: text('phone'),
   email: text('email'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),

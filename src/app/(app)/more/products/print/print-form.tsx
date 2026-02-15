@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -210,9 +211,12 @@ export function PrintForm({ products }: PrintFormProps) {
               <div className="flex h-full gap-1">
                 <div className="flex-shrink-0">
                   {qrCodes[product.id] && (
-                    <img
+                    <Image
                       src={qrCodes[product.id]}
                       alt={product.itemCode}
+                      width={150}
+                      height={150}
+                      unoptimized
                       style={{
                         width: labelSize === 'small' ? '20mm' : labelSize === 'medium' ? '28mm' : '40mm',
                         height: labelSize === 'small' ? '20mm' : labelSize === 'medium' ? '28mm' : '40mm'

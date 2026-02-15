@@ -88,25 +88,78 @@ interface InvoiceInput {
   remark?: string;
 }
 
-// Helper: auto-create or reuse customer
-async function resolveCustomer(
-  info: InvoiceInput['billTo'],
-  reuseId?: string | null,
-): Promise<string | null> {
-  if (info.customerId) return info.customerId;
-  if (!info.name) return null;
+type AddressField = 'billToAddress' | 'shipToAddress';
 
-  // Reuse if same name as bill-to customer already created
-  if (reuseId) return reuseId;
+// Resolve customer by selected ID or name, and persist any newly entered info.
+async function resolveAndPersistCustomer(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tx: any,
+  info: InvoiceInput['billTo'] | InvoiceInput['shipTo'],
+  addressField: AddressField,
+  preferredId?: string | null,
+): Promise<string | null> {
+  const hasName = !!info.name?.trim();
+  const incomingAddress = info.address?.trim() || null;
+  const targetId = info.customerId || preferredId || null;
+
+  if (!hasName && targetId) {
+    return targetId;
+  }
+  if (!hasName) {
+    return null;
+  }
+
+  const normalizedName = info.name.trim();
+
+  const hydrateCustomer = async (customerId: string) => {
+    const existing = await tx.query.customers.findFirst({
+      where: eq(customers.id, customerId),
+    });
+    if (!existing) return null;
+
+    const billToAddress = addressField === 'billToAddress'
+      ? (incomingAddress || existing.billToAddress || existing.address || null)
+      : (existing.billToAddress || null);
+    const shipToAddress = addressField === 'shipToAddress'
+      ? (incomingAddress || existing.shipToAddress || existing.address || null)
+      : (existing.shipToAddress || null);
+
+    await tx.update(customers).set({
+      name: normalizedName,
+      contactName: info.contactName?.trim() || existing.contactName || null,
+      address: incomingAddress || existing.address || null,
+      billToAddress,
+      shipToAddress,
+      phone: info.phone?.trim() || existing.phone || null,
+      email: info.email?.trim() || existing.email || null,
+    }).where(eq(customers.id, customerId));
+
+    return customerId;
+  };
+
+  if (targetId) {
+    const hydrated = await hydrateCustomer(targetId);
+    if (hydrated) return hydrated;
+  }
+
+  const byName = await tx.query.customers.findFirst({
+    where: eq(customers.name, normalizedName),
+  });
+
+  if (byName) {
+    return hydrateCustomer(byName.id);
+  }
 
   const id = nanoid();
-  await db.insert(customers).values({
+  await tx.insert(customers).values({
     id,
-    name: info.name,
-    contactName: info.contactName || null,
-    address: info.address || null,
-    phone: info.phone || null,
-    email: info.email || null,
+    name: normalizedName,
+    contactName: info.contactName?.trim() || null,
+    address: incomingAddress,
+    billToAddress: addressField === 'billToAddress' ? incomingAddress : null,
+    shipToAddress: addressField === 'shipToAddress' ? incomingAddress : null,
+    phone: info.phone?.trim() || null,
+    email: info.email?.trim() || null,
   });
   return id;
 }
@@ -147,38 +200,23 @@ export async function createInvoice(data: InvoiceInput) {
         });
       }
 
-      // Auto-save new customers
-      let billToCustomerId: string | null = data.billTo.customerId || null;
-      if (!billToCustomerId && data.billTo.name) {
-        const id = nanoid();
-        await tx.insert(customers).values({
-          id,
-          name: data.billTo.name,
-          contactName: data.billTo.contactName || null,
-          address: data.billTo.address || null,
-          phone: data.billTo.phone || null,
-          email: data.billTo.email || null,
-        });
-        billToCustomerId = id;
-      }
+      const sameParty =
+        !!data.billTo.name &&
+        !!data.shipTo.name &&
+        data.billTo.name.trim().toLowerCase() === data.shipTo.name.trim().toLowerCase();
 
-      let shipToCustomerId: string | null = data.shipTo.customerId || null;
-      if (!shipToCustomerId && data.shipTo.name) {
-        if (data.shipTo.name === data.billTo.name && billToCustomerId) {
-          shipToCustomerId = billToCustomerId;
-        } else {
-          const id = nanoid();
-          await tx.insert(customers).values({
-            id,
-            name: data.shipTo.name,
-            contactName: data.shipTo.contactName || null,
-            address: data.shipTo.address || null,
-            phone: data.shipTo.phone || null,
-            email: data.shipTo.email || null,
-          });
-          shipToCustomerId = id;
-        }
-      }
+      // Search/select existing customer or save new one entered inline.
+      const billToCustomerId = await resolveAndPersistCustomer(
+        tx,
+        data.billTo,
+        'billToAddress',
+      );
+      const shipToCustomerId = await resolveAndPersistCustomer(
+        tx,
+        data.shipTo,
+        'shipToAddress',
+        sameParty ? billToCustomerId : null,
+      );
 
       // Calculate total with rounding
       const total = round2(data.items.reduce((sum, item) => sum + round2(item.quantity * item.priceEach), 0));
@@ -267,38 +305,22 @@ export async function updateInvoice(id: string, data: InvoiceInput) {
         throw new Error('Can only edit draft invoices');
       }
 
-      // Auto-save new customers on update too
-      let billToCustomerId: string | null = data.billTo.customerId || null;
-      if (!billToCustomerId && data.billTo.name) {
-        const custId = nanoid();
-        await tx.insert(customers).values({
-          id: custId,
-          name: data.billTo.name,
-          contactName: data.billTo.contactName || null,
-          address: data.billTo.address || null,
-          phone: data.billTo.phone || null,
-          email: data.billTo.email || null,
-        });
-        billToCustomerId = custId;
-      }
+      const sameParty =
+        !!data.billTo.name &&
+        !!data.shipTo.name &&
+        data.billTo.name.trim().toLowerCase() === data.shipTo.name.trim().toLowerCase();
 
-      let shipToCustomerId: string | null = data.shipTo.customerId || null;
-      if (!shipToCustomerId && data.shipTo.name) {
-        if (data.shipTo.name === data.billTo.name && billToCustomerId) {
-          shipToCustomerId = billToCustomerId;
-        } else {
-          const custId = nanoid();
-          await tx.insert(customers).values({
-            id: custId,
-            name: data.shipTo.name,
-            contactName: data.shipTo.contactName || null,
-            address: data.shipTo.address || null,
-            phone: data.shipTo.phone || null,
-            email: data.shipTo.email || null,
-          });
-          shipToCustomerId = custId;
-        }
-      }
+      const billToCustomerId = await resolveAndPersistCustomer(
+        tx,
+        data.billTo,
+        'billToAddress',
+      );
+      const shipToCustomerId = await resolveAndPersistCustomer(
+        tx,
+        data.shipTo,
+        'shipToAddress',
+        sameParty ? billToCustomerId : null,
+      );
 
       const total = round2(data.items.reduce((sum, item) => sum + round2(item.quantity * item.priceEach), 0));
 

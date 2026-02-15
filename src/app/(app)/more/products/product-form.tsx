@@ -50,7 +50,7 @@ export function ProductForm({ product }: ProductFormProps) {
           toast.success(tCommon('success'));
           router.push(`/more/products/${result.id}`);
         }
-      } catch (error) {
+      } catch {
         toast.error(tCommon('error'));
       }
     });

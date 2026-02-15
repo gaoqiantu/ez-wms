@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { products, inventory, locations } from '@/db/schema';
+import { products, inventory } from '@/db/schema';
 import { eq, or, like } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 

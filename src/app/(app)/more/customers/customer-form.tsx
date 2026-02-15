@@ -23,7 +23,8 @@ export function CustomerForm({ customer }: CustomerFormProps) {
   const [formData, setFormData] = useState({
     name: customer?.name || '',
     contactName: customer?.contactName || '',
-    address: customer?.address || '',
+    billToAddress: customer?.billToAddress || customer?.address || '',
+    shipToAddress: customer?.shipToAddress || customer?.address || '',
     phone: customer?.phone || '',
     email: customer?.email || '',
   });
@@ -93,11 +94,20 @@ export function CustomerForm({ customer }: CustomerFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="address">{t('address')}</Label>
+        <Label htmlFor="billToAddress">{t('billToAddress')}</Label>
         <Input
-          id="address"
-          value={formData.address}
-          onChange={(e) => handleChange('address', e.target.value)}
+          id="billToAddress"
+          value={formData.billToAddress}
+          onChange={(e) => handleChange('billToAddress', e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="shipToAddress">{t('shipToAddress')}</Label>
+        <Input
+          id="shipToAddress"
+          value={formData.shipToAddress}
+          onChange={(e) => handleChange('shipToAddress', e.target.value)}
         />
       </div>
 

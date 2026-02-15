@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from '@/db';
-import { products, inventory, locations } from '@/db/schema';
-import { eq, like, or, sql } from 'drizzle-orm';
+import { products, inventory } from '@/db/schema';
+import { eq, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 
 export async function getInventoryReport(search?: string, location?: string) {
@@ -10,7 +10,7 @@ export async function getInventoryReport(search?: string, location?: string) {
   if (!session?.user?.id) {
     return [];
   }
-  let query = db
+  const query = db
     .select({
       id: inventory.id,
       itemCode: products.itemCode,

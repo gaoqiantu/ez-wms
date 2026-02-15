@@ -22,7 +22,14 @@ export async function getUsers() {
     orderBy: [desc(users.createdAt)],
   });
   // Exclude passwordHash from response
-  return allUsers.map(({ passwordHash, ...user }) => user);
+  return allUsers.map((user) => ({
+    id: user.id,
+    username: user.username,
+    name: user.name,
+    role: user.role,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  }));
 }
 
 export async function createUser(data: {

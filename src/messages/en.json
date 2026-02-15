@@ -247,6 +247,8 @@
     "name": "Business Name",
     "contactName": "Contact Name",
     "address": "Address",
+    "billToAddress": "Bill To Address",
+    "shipToAddress": "Ship To Address",
     "phone": "Phone",
     "email": "Email",
     "add": "Add",

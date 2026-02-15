@@ -89,6 +89,11 @@ export function CustomerList({ initialCustomers }: CustomerListProps) {
                     {customer.contactName && (
                       <p className="text-sm text-muted-foreground">{customer.contactName}</p>
                     )}
+                    {(customer.billToAddress || customer.shipToAddress || customer.address) && (
+                      <p className="text-sm text-muted-foreground">
+                        {customer.billToAddress || customer.shipToAddress || customer.address}
+                      </p>
+                    )}
                     {customer.phone && (
                       <p className="text-sm text-muted-foreground">{customer.phone}</p>
                     )}

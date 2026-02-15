@@ -10,8 +10,9 @@ import { login } from './actions';
 
 export function LoginForm() {
   const t = useTranslations('auth');
+  type LoginState = Awaited<ReturnType<typeof login>> | null;
   const [state, formAction, pending] = useActionState(
-    async (_prevState: any, formData: FormData) => {
+    async (_prevState: LoginState, formData: FormData): Promise<LoginState> => {
       return await login(formData);
     },
     null

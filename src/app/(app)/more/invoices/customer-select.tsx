@@ -17,11 +17,12 @@ interface CustomerInfo {
 
 interface CustomerSelectProps {
   label: string;
+  addressType: 'billTo' | 'shipTo';
   value: CustomerInfo;
   onChange: (value: CustomerInfo) => void;
 }
 
-export function CustomerSelect({ label, value, onChange }: CustomerSelectProps) {
+export function CustomerSelect({ label, addressType, value, onChange }: CustomerSelectProps) {
   const [searchResults, setSearchResults] = useState<Customer[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,12 +50,19 @@ export function CustomerSelect({ label, value, onChange }: CustomerSelectProps) 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const getAddressFromCustomer = (customer: Customer) => {
+    if (addressType === 'billTo') {
+      return customer.billToAddress || customer.address || customer.shipToAddress || '';
+    }
+    return customer.shipToAddress || customer.address || customer.billToAddress || '';
+  };
+
   const handleSelect = (customer: Customer) => {
     onChange({
       customerId: customer.id,
       name: customer.name,
       contactName: customer.contactName || '',
-      address: customer.address || '',
+      address: getAddressFromCustomer(customer),
       phone: customer.phone || '',
       email: customer.email || '',
     });
@@ -89,6 +97,13 @@ export function CustomerSelect({ label, value, onChange }: CustomerSelectProps) 
                   {customer.contactName && (
                     <div className="text-xs text-muted-foreground">{customer.contactName}</div>
                   )}
+                  {(customer.billToAddress || customer.shipToAddress || customer.address) && (
+                    <div className="text-xs text-muted-foreground">
+                      {addressType === 'billTo'
+                        ? (customer.billToAddress || customer.address || customer.shipToAddress)
+                        : (customer.shipToAddress || customer.address || customer.billToAddress)}
+                    </div>
+                  )}
                 </button>
               ))}
             </div>
@@ -104,7 +119,7 @@ export function CustomerSelect({ label, value, onChange }: CustomerSelectProps) 
       <Input
         value={value.address}
         onChange={(e) => handleFieldChange('address', e.target.value)}
-        placeholder="Address"
+        placeholder={addressType === 'billTo' ? 'Bill To Address' : 'Ship To Address'}
         className="text-sm"
       />
       <div className="grid grid-cols-2 gap-2">

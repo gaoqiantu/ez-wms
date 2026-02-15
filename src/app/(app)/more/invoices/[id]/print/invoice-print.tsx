@@ -22,13 +22,32 @@ export function InvoicePrint({ invoice, companyInfo }: InvoicePrintProps) {
     window.print();
   };
 
-  const formatDate = (date: Date) => new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric', month: '2-digit', day: '2-digit'
-  });
+  const formatDate = (date: Date) =>
+    new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+
+  const sortedItems = [...invoice.items].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const emptyRowCount = Math.max(0, 11 - sortedItems.length);
+
+  const paymentLines = (companyInfo.paymentInfo || '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const termsLines = [
+    '1. All invoices are to be paid C.O.D.',
+    '2. It is customer\'s obligation to check ordered products while driver is on site. Once unloaded, CitiQuartz Atlanta is not responsible for defected or damaged slab.',
+    '3. It is customer\'s obligation to check ordered products before fabricate/cut. Once fabricated, CitiQuartz Atlanta is not responsible for defected or damaged slab.',
+    '4. Returns will only be accepted within 15 days from the date of delivery. Store credit will be issued to the relevant account, absolutely no refund.',
+    '5. All on sale and discount orders are final, no return and no refund.',
+    '6. Actual slab may vary in color from the sample, CitiQuartz Atlanta reserves all rights of final explanation.',
+  ];
 
   return (
     <>
-      {/* Print button - hidden when printing */}
       <div className="fixed bottom-6 right-6 z-50 print:hidden">
         <Button
           onClick={handlePrint}
@@ -39,165 +58,168 @@ export function InvoicePrint({ invoice, companyInfo }: InvoicePrintProps) {
         </Button>
       </div>
 
-      {/* Print-optimized invoice layout */}
-      <div className="print-invoice mx-auto max-w-[8.5in] bg-white p-8 text-black text-[13px] leading-tight">
-
-        {/* Company Header */}
-        {companyInfo.name && (
-          <div className="text-center border-b-2 border-black pb-3 mb-4">
-            <h1 className="text-2xl font-bold tracking-wide">{companyInfo.name}</h1>
-            {companyInfo.address && <p className="text-sm">{companyInfo.address}</p>}
-            {companyInfo.phone && <p className="text-sm">Tel: {companyInfo.phone}</p>}
-            {companyInfo.email && <p className="text-sm">Email: {companyInfo.email}</p>}
+      <div className="print-invoice mx-auto max-w-[8.5in] bg-white p-5 text-black text-[12px] leading-tight">
+        <div className="mb-3 grid grid-cols-[1.4fr_0.9fr] gap-4">
+          <div className="grid grid-cols-[88px_1fr] gap-3">
+            <div className="flex flex-col items-center justify-center border border-gray-300 p-2 text-center">
+              <div className="text-[18px] font-bold leading-none">CQ</div>
+              <div className="mt-1 text-[9px] font-semibold uppercase tracking-wider">CitiQuartz</div>
+            </div>
+            <div>
+              <div className="text-[34px] font-semibold leading-none">{companyInfo.name}</div>
+              {companyInfo.address && <div className="mt-1 text-[12px]">{companyInfo.address}</div>}
+              {companyInfo.phone && <div className="text-[12px]">Tel: {companyInfo.phone}</div>}
+              {companyInfo.email && <div className="text-[12px]">Email: {companyInfo.email}</div>}
+            </div>
           </div>
-        )}
-
-        {/* Invoice Title */}
-        <div className="text-center mb-4">
-          <h2 className="text-xl font-bold">INVOICE</h2>
-        </div>
-
-        {/* Invoice Info Row */}
-        <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-          <div className="space-y-1">
-            <div><strong>Date:</strong> {formatDate(invoice.date)}</div>
-            <div><strong>P.O. Number:</strong> {invoice.poNumber || '\u2014'}</div>
-          </div>
-          <div className="space-y-1 text-right">
-            <div><strong>Invoice #:</strong> {invoice.invoiceNo}</div>
-            <div><strong>Terms:</strong> {invoice.terms || '\u2014'}</div>
-          </div>
-        </div>
-
-        {/* Bill To / Ship To */}
-        <div className="grid grid-cols-2 gap-4 mb-4 border border-black">
-          <div className="p-3 border-r border-black">
-            <p className="font-bold text-xs uppercase mb-1">Bill To:</p>
-            <p className="font-semibold">{invoice.billToName || ''}</p>
-            {invoice.billToContact && <p>{invoice.billToContact}</p>}
-            {invoice.billToAddress && <p>{invoice.billToAddress}</p>}
-            {invoice.billToPhone && <p>Tel: {invoice.billToPhone}</p>}
-            {invoice.billToEmail && <p>{invoice.billToEmail}</p>}
-          </div>
-          <div className="p-3">
-            <p className="font-bold text-xs uppercase mb-1">Ship To:</p>
-            <p className="font-semibold">{invoice.shipToName || ''}</p>
-            {invoice.shipToContact && <p>{invoice.shipToContact}</p>}
-            {invoice.shipToAddress && <p>{invoice.shipToAddress}</p>}
-            {invoice.shipToPhone && <p>Tel: {invoice.shipToPhone}</p>}
-            {invoice.shipToEmail && <p>{invoice.shipToEmail}</p>}
+          <div>
+            <div className="mb-2 text-right text-[48px] font-semibold leading-none">Invoice</div>
+            <table className="w-full border-collapse border border-gray-500 text-center text-[12px]">
+              <thead>
+                <tr>
+                  <th className="border border-gray-500 py-1 font-medium">Date</th>
+                  <th className="border border-gray-500 py-1 font-medium">Invoice #</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="h-9 border border-gray-500 px-1">{formatDate(invoice.date)}</td>
+                  <td className="h-9 border border-gray-500 px-1">{invoice.invoiceNo}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Header fields row */}
-        <div className="grid grid-cols-3 gap-2 mb-4 text-sm border border-black p-2">
-          <div><strong>Rep:</strong> {invoice.rep || ''}</div>
-          <div><strong>Via:</strong> {invoice.via || ''}</div>
-          <div><strong>Ship:</strong> {invoice.ship || ''}</div>
+        <div className="mb-3 grid grid-cols-2 gap-4">
+          <div className="border border-gray-500">
+            <div className="border-b border-gray-500 px-2 py-1 text-[12px] font-medium">Bill To</div>
+            <div className="min-h-[108px] space-y-1 p-2 text-[11px]">
+              <div className="font-semibold">{invoice.billToName || ''}</div>
+              {invoice.billToContact && <div>{invoice.billToContact}</div>}
+              {invoice.billToAddress && <div>{invoice.billToAddress}</div>}
+              {invoice.billToPhone && <div>{invoice.billToPhone}</div>}
+              {invoice.billToEmail && <div>{invoice.billToEmail}</div>}
+            </div>
+          </div>
+          <div className="border border-gray-500">
+            <div className="border-b border-gray-500 px-2 py-1 text-[12px] font-medium">Ship To</div>
+            <div className="min-h-[108px] space-y-1 p-2 text-[11px]">
+              <div className="font-semibold">{invoice.shipToName || ''}</div>
+              {invoice.shipToContact && <div>{invoice.shipToContact}</div>}
+              {invoice.shipToAddress && <div>{invoice.shipToAddress}</div>}
+              {invoice.shipToPhone && <div>{invoice.shipToPhone}</div>}
+              {invoice.shipToEmail && <div>{invoice.shipToEmail}</div>}
+            </div>
+          </div>
         </div>
 
-        {/* Line Items Table */}
-        <table className="w-full border-collapse border border-black mb-4">
+        <table className="mb-2 w-full border-collapse border border-gray-500 text-[12px]">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-black p-2 text-left w-16">Qty</th>
-              <th className="border border-black p-2 text-left w-28">Item Code</th>
-              <th className="border border-black p-2 text-left">Description</th>
-              <th className="border border-black p-2 text-right w-24">Price Each</th>
-              <th className="border border-black p-2 text-right w-24">Amount</th>
+            <tr>
+              <th className="border border-gray-500 px-2 py-1 font-medium">P.O. Number</th>
+              <th className="border border-gray-500 px-2 py-1 font-medium">Terms</th>
+              <th className="border border-gray-500 px-2 py-1 font-medium">Rep</th>
+              <th className="border border-gray-500 px-2 py-1 font-medium">Via</th>
+              <th className="border border-gray-500 px-2 py-1 font-medium">Ship</th>
             </tr>
           </thead>
           <tbody>
-            {invoice.items
-              .toSorted((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-              .map((item) => (
+            <tr>
+              <td className="h-9 border border-gray-500 px-2">{invoice.poNumber || ''}</td>
+              <td className="h-9 border border-gray-500 px-2">{invoice.terms || ''}</td>
+              <td className="h-9 border border-gray-500 px-2">{invoice.rep || ''}</td>
+              <td className="h-9 border border-gray-500 px-2">{invoice.via || ''}</td>
+              <td className="h-9 border border-gray-500 px-2">{invoice.ship || ''}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table className="w-full border-collapse border border-gray-500 text-[12px]">
+          <thead>
+            <tr>
+              <th className="w-[11%] border border-gray-500 px-2 py-1 text-left font-medium">Quantity</th>
+              <th className="w-[16%] border border-gray-500 px-2 py-1 text-left font-medium">Item Code</th>
+              <th className="w-[43%] border border-gray-500 px-2 py-1 text-left font-medium">Description</th>
+              <th className="w-[15%] border border-gray-500 px-2 py-1 text-left font-medium">Price Each</th>
+              <th className="w-[15%] border border-gray-500 px-2 py-1 text-left font-medium">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedItems.map((item) => (
               <tr key={item.id}>
-                <td className="border border-black p-2">{item.quantity}</td>
-                <td className="border border-black p-2 font-mono text-xs">{item.itemCode}</td>
-                <td className="border border-black p-2">{item.description || ''}</td>
-                <td className="border border-black p-2 text-right">${item.priceEach.toFixed(2)}</td>
-                <td className="border border-black p-2 text-right font-semibold">${item.amount.toFixed(2)}</td>
+                <td className="border border-gray-500 px-2 py-1 align-top">{item.quantity}</td>
+                <td className="border border-gray-500 px-2 py-1 align-top font-mono">{item.itemCode}</td>
+                <td className="border border-gray-500 px-2 py-1 align-top">{item.description || ''}</td>
+                <td className="border border-gray-500 px-2 py-1 align-top">${item.priceEach.toFixed(2)}</td>
+                <td className="border border-gray-500 px-2 py-1 align-top">${item.amount.toFixed(2)}</td>
               </tr>
             ))}
-            {/* Empty rows to fill space if less than ~10 items */}
-            {Array.from({ length: Math.max(0, 8 - invoice.items.length) }).map((_, i) => (
+            {Array.from({ length: emptyRowCount }).map((_, i) => (
               <tr key={`empty-${i}`}>
-                <td className="border border-black p-2">&nbsp;</td>
-                <td className="border border-black p-2"></td>
-                <td className="border border-black p-2"></td>
-                <td className="border border-black p-2"></td>
-                <td className="border border-black p-2"></td>
+                <td className="h-8 border border-gray-500 px-2 py-1">&nbsp;</td>
+                <td className="border border-gray-500 px-2 py-1"></td>
+                <td className="border border-gray-500 px-2 py-1"></td>
+                <td className="border border-gray-500 px-2 py-1"></td>
+                <td className="border border-gray-500 px-2 py-1"></td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="font-bold">
-              <td colSpan={4} className="border border-black p-2 text-right">TOTAL:</td>
-              <td className="border border-black p-2 text-right text-lg">${(invoice.total || 0).toFixed(2)}</td>
+            <tr>
+              <td className="border border-gray-500 px-2 py-1"></td>
+              <td className="border border-gray-500 px-2 py-1"></td>
+              <td className="border border-gray-500 px-2 py-1"></td>
+              <td className="border border-gray-500 px-2 py-1 font-semibold">Total</td>
+              <td className="border border-gray-500 px-2 py-1 font-semibold">${(invoice.total || 0).toFixed(2)}</td>
             </tr>
           </tfoot>
         </table>
 
-        {/* Remark */}
+        <div className="mt-2 grid grid-cols-[1fr_0.45fr] gap-6">
+          <div>
+            {paymentLines.length > 0 && (
+              <div className="mb-2 space-y-1 text-[11px]">
+                {paymentLines.map((line, i) => (
+                  <p key={i} className="font-semibold">{line}</p>
+                ))}
+              </div>
+            )}
+            <div className="text-[11px]">
+              <p className="mb-1 text-[12px] font-semibold">Terms &amp; Condition:</p>
+              {termsLines.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+              <p className="mt-1 font-semibold">
+                REMOVE THE PLASTIC AND INSPECT THIS MATERIAL BEFORE YOU CUT.
+              </p>
+            </div>
+          </div>
+          <div className="pt-10 text-[12px]">
+            <p className="mb-2 text-[12px]">Received By:</p>
+            <p className="mb-4">Print: ________________________</p>
+            <p className="mb-4">Signature: ________________________</p>
+            <p>Date: ________________________</p>
+          </div>
+        </div>
+
         {invoice.remark && (
-          <div className="mb-4 text-sm">
-            <strong>Remark:</strong> {invoice.remark}
+          <div className="mt-3 border-t border-gray-300 pt-2 text-[11px]">
+            <span className="font-semibold">Remark:</span> {invoice.remark}
           </div>
         )}
-
-        {/* Payment Instructions */}
-        {companyInfo.paymentInfo && (
-          <div className="border border-black p-3 mb-4">
-            <p className="font-bold mb-1">Payment Instructions:</p>
-            {companyInfo.paymentInfo.split('\n').map((line, i) => (
-              <p key={i}>{line}</p>
-            ))}
-          </div>
-        )}
-
-        {/* Terms & Conditions */}
-        <div className="border border-black p-3 mb-4 text-xs">
-          <p className="font-bold mb-2">Terms &amp; Conditions:</p>
-          <ol className="list-decimal pl-4 space-y-1">
-            <li>All invoices are to be paid C.O.D. (Cash on Delivery).</li>
-            <li>The customer must check ordered products while the driver is on-site. The company is not responsible for defects/damage once unloaded.</li>
-            <li>The customer must check products before fabricating/cutting. The company is not responsible for defects/damage once fabricated.</li>
-            <li>Returns are accepted within 15 days of delivery for Store Credit only (no refunds).</li>
-            <li>All sale and discount orders are final (no returns/refunds).</li>
-            <li>Actual slab color may vary from samples; the company reserves the right of final explanation.</li>
-          </ol>
-          <div className="mt-3 p-2 border-2 border-black bg-yellow-50 text-center font-bold text-sm">
-            REMOVE THE PLASTIC AND INSPECT THIS MATERIAL BEFORE YOU CUT.
-          </div>
-        </div>
-
-        {/* Received By */}
-        <div className="border border-black p-3">
-          <p className="font-bold mb-3">Received By:</p>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="mb-6">Signature: ______________________________</p>
-              <p>Print: ______________________________</p>
-            </div>
-            <div>
-              <p className="mb-6">Date: ______________________________</p>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* Print CSS */}
       <style jsx global>{`
         @media print {
           @page {
             size: letter;
-            margin: 0.4in;
+            margin: 0.35in;
           }
           body {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
-          /* Hide everything except the invoice content */
           body * {
             visibility: hidden;
           }
@@ -213,7 +235,10 @@ export function InvoicePrint({ invoice, companyInfo }: InvoicePrintProps) {
             padding: 0 !important;
             max-width: 100% !important;
           }
-          nav, header, footer, .print\\:hidden {
+          nav,
+          header,
+          footer,
+          .print\\:hidden {
             display: none !important;
           }
         }

@@ -247,6 +247,8 @@
     "name": "公司名称",
     "contactName": "联系人",
     "address": "地址",
+    "billToAddress": "账单地址",
+    "shipToAddress": "收货地址",
     "phone": "电话",
     "email": "邮箱",
     "add": "添加",

@@ -108,7 +108,13 @@ export function InvoiceForm({
     startTransition(async () => {
       try {
         // Strip _key before sending to server
-        const serverItems = items.map(({ _key, ...rest }) => rest);
+        const serverItems = items.map((item) => ({
+          productId: item.productId,
+          itemCode: item.itemCode,
+          description: item.description,
+          priceEach: item.priceEach,
+          quantity: item.quantity,
+        }));
 
         const data = {
           date,
@@ -177,6 +183,7 @@ export function InvoiceForm({
       {/* Bill To */}
       <CustomerSelect
         label={t('billTo')}
+        addressType="billTo"
         value={billTo}
         onChange={setBillTo}
       />
@@ -184,6 +191,7 @@ export function InvoiceForm({
       {/* Ship To */}
       <CustomerSelect
         label={t('shipTo')}
+        addressType="shipTo"
         value={shipTo}
         onChange={setShipTo}
       />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -53,7 +53,7 @@ export function TransactionList({ initialData }: TransactionListProps) {
   const [toDate, setToDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     const results = await getTransactions({
       search: search || undefined,
@@ -63,12 +63,14 @@ export function TransactionList({ initialData }: TransactionListProps) {
     });
     setData(results);
     setIsLoading(false);
-  };
+  }, [search, type, fromDate, toDate]);
 
   useEffect(() => {
-    const timer = setTimeout(fetchData, 300);
+    const timer = setTimeout(() => {
+      void fetchData();
+    }, 300);
     return () => clearTimeout(timer);
-  }, [search, type, fromDate, toDate]);
+  }, [fetchData]);
 
   const formatDate = (date: Date | null) => {
     if (!date) return '';
