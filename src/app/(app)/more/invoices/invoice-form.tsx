@@ -24,6 +24,17 @@ interface InvoiceFormProps {
   shipOptions: string[];
 }
 
+interface CustomerFormValue {
+  customerId?: string;
+  name: string;
+  contactName: string;
+  address: string;
+  phone: string;
+  email: string;
+}
+
+const normalize = (value?: string | null) => (value || '').trim();
+
 export function InvoiceForm({
   invoice,
   nextInvoiceNo,
@@ -41,14 +52,7 @@ export function InvoiceForm({
     invoice ? new Date(invoice.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
   );
   const [poNumber, setPoNumber] = useState(invoice?.poNumber || '');
-  const [billTo, setBillTo] = useState<{
-    customerId?: string;
-    name: string;
-    contactName: string;
-    address: string;
-    phone: string;
-    email: string;
-  }>({
+  const [billTo, setBillTo] = useState<CustomerFormValue>({
     customerId: invoice?.billToCustomerId || undefined,
     name: invoice?.billToName || '',
     contactName: invoice?.billToContact || '',
@@ -56,20 +60,24 @@ export function InvoiceForm({
     phone: invoice?.billToPhone || '',
     email: invoice?.billToEmail || '',
   });
-  const [shipTo, setShipTo] = useState<{
-    customerId?: string;
-    name: string;
-    contactName: string;
-    address: string;
-    phone: string;
-    email: string;
-  }>({
+  const [shipTo, setShipTo] = useState<CustomerFormValue>({
     customerId: invoice?.shipToCustomerId || undefined,
     name: invoice?.shipToName || '',
     contactName: invoice?.shipToContact || '',
     address: invoice?.shipToAddress || '',
     phone: invoice?.shipToPhone || '',
     email: invoice?.shipToEmail || '',
+  });
+  const [shipToCustomized, setShipToCustomized] = useState(() => {
+    if (!invoice) return false;
+    return (
+      normalize(invoice.shipToCustomerId) !== normalize(invoice.billToCustomerId) ||
+      normalize(invoice.shipToName) !== normalize(invoice.billToName) ||
+      normalize(invoice.shipToContact) !== normalize(invoice.billToContact) ||
+      normalize(invoice.shipToAddress) !== normalize(invoice.billToAddress) ||
+      normalize(invoice.shipToPhone) !== normalize(invoice.billToPhone) ||
+      normalize(invoice.shipToEmail) !== normalize(invoice.billToEmail)
+    );
   });
   const [terms, setTerms] = useState(invoice?.terms || '');
   const [rep, setRep] = useState(invoice?.rep || '');
@@ -185,7 +193,32 @@ export function InvoiceForm({
         label={t('billTo')}
         addressType="billTo"
         value={billTo}
-        onChange={setBillTo}
+        onChange={(nextBillTo, meta) => {
+          setBillTo(nextBillTo);
+
+          if (shipToCustomized) return;
+
+          if (meta.source === 'select' && meta.customer) {
+            setShipTo({
+              customerId: meta.customer.id,
+              name: meta.customer.name,
+              contactName: meta.customer.contactName || '',
+              address: meta.customer.shipToAddress || meta.customer.address || meta.customer.billToAddress || '',
+              phone: meta.customer.phone || '',
+              email: meta.customer.email || '',
+            });
+            return;
+          }
+
+          setShipTo({
+            customerId: nextBillTo.customerId,
+            name: nextBillTo.name,
+            contactName: nextBillTo.contactName,
+            address: nextBillTo.address,
+            phone: nextBillTo.phone,
+            email: nextBillTo.email,
+          });
+        }}
       />
 
       {/* Ship To */}
@@ -193,7 +226,10 @@ export function InvoiceForm({
         label={t('shipTo')}
         addressType="shipTo"
         value={shipTo}
-        onChange={setShipTo}
+        onChange={(nextShipTo) => {
+          setShipTo(nextShipTo);
+          setShipToCustomized(true);
+        }}
       />
 
       {/* Terms / Rep / Via / Ship */}

@@ -91,7 +91,12 @@
     "todayActivity": "今日动态",
     "lowStockAlerts": "低库存预警",
     "quickActions": "快捷操作",
-    "recentTransactions": "最近操作"
+    "recentTransactions": "最近操作",
+    "invoiceOverview": "发票概览",
+    "recentInvoices": "最近发票",
+    "draftInvoices": "草稿发票",
+    "completedToday": "今日已完成",
+    "salesToday": "今日销售额"
   },
   "more": {
     "title": "更多",

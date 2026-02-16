@@ -90,6 +90,26 @@ interface InvoiceInput {
 
 type AddressField = 'billToAddress' | 'shipToAddress';
 
+function isSameParty(
+  billTo: InvoiceInput['billTo'],
+  shipTo: InvoiceInput['shipTo'],
+): boolean {
+  const billCustomerId = billTo.customerId?.trim();
+  const shipCustomerId = shipTo.customerId?.trim();
+
+  if (billCustomerId && shipCustomerId) {
+    return billCustomerId === shipCustomerId;
+  }
+
+  if (shipCustomerId) {
+    return false;
+  }
+
+  const billName = billTo.name?.trim().toLowerCase();
+  const shipName = shipTo.name?.trim().toLowerCase();
+  return !!billName && !!shipName && billName === shipName;
+}
+
 // Resolve customer by selected ID or name, and persist any newly entered info.
 async function resolveAndPersistCustomer(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -200,10 +220,7 @@ export async function createInvoice(data: InvoiceInput) {
         });
       }
 
-      const sameParty =
-        !!data.billTo.name &&
-        !!data.shipTo.name &&
-        data.billTo.name.trim().toLowerCase() === data.shipTo.name.trim().toLowerCase();
+      const sameParty = isSameParty(data.billTo, data.shipTo);
 
       // Search/select existing customer or save new one entered inline.
       const billToCustomerId = await resolveAndPersistCustomer(
@@ -305,10 +322,7 @@ export async function updateInvoice(id: string, data: InvoiceInput) {
         throw new Error('Can only edit draft invoices');
       }
 
-      const sameParty =
-        !!data.billTo.name &&
-        !!data.shipTo.name &&
-        data.billTo.name.trim().toLowerCase() === data.shipTo.name.trim().toLowerCase();
+      const sameParty = isSameParty(data.billTo, data.shipTo);
 
       const billToCustomerId = await resolveAndPersistCustomer(
         tx,

@@ -91,7 +91,12 @@
     "todayActivity": "Today's Activity",
     "lowStockAlerts": "Low Stock Alerts",
     "quickActions": "Quick Actions",
-    "recentTransactions": "Recent Transactions"
+    "recentTransactions": "Recent Transactions",
+    "invoiceOverview": "Invoice Overview",
+    "recentInvoices": "Recent Invoices",
+    "draftInvoices": "Draft Invoices",
+    "completedToday": "Completed Today",
+    "salesToday": "Sales Today"
   },
   "more": {
     "title": "More",
