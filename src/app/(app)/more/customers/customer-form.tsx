@@ -36,7 +36,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name) {
+    if (!formData.name.trim()) {
       toast.error(t('name') + ' is required');
       return;
     }
@@ -44,7 +44,11 @@ export function CustomerForm({ customer }: CustomerFormProps) {
     startTransition(async () => {
       try {
         if (customer) {
-          await updateCustomer(customer.id, formData);
+          const result = await updateCustomer(customer.id, formData);
+          if ('error' in result) {
+            toast.error(result.error);
+            return;
+          }
           toast.success(tCommon('success'));
         } else {
           const result = await createCustomer(formData);
@@ -66,7 +70,11 @@ export function CustomerForm({ customer }: CustomerFormProps) {
     if (!confirm(t('deleteConfirm'))) return;
 
     startTransition(async () => {
-      await deleteCustomer(customer.id);
+      const result = await deleteCustomer(customer.id);
+      if ('error' in result) {
+        toast.error(result.error);
+        return;
+      }
       toast.success(tCommon('success'));
       router.push('/more/customers');
     });
