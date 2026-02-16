@@ -91,11 +91,8 @@ async function getCustomerLegacy(id: string): Promise<Customer | null> {
 }
 
 async function searchCustomersLegacy(query: string): Promise<Customer[]> {
-  if (!query.trim()) {
-    return [];
-  }
-
-  const rows = await db
+  const normalized = query.trim();
+  const baseQuery = db
     .select({
       id: customers.id,
       name: customers.name,
@@ -106,16 +103,21 @@ async function searchCustomersLegacy(query: string): Promise<Customer[]> {
       createdAt: customers.createdAt,
       updatedAt: customers.updatedAt,
     })
-    .from(customers)
-    .where(
+    .from(customers);
+
+  const queryWithFilter = normalized
+    ? baseQuery.where(
       or(
-        like(customers.name, `%${query}%`),
-        like(customers.contactName, `%${query}%`),
-        like(customers.phone, `%${query}%`),
-        like(customers.email, `%${query}%`),
-        like(customers.address, `%${query}%`)
+        like(customers.name, `%${normalized}%`),
+        like(customers.contactName, `%${normalized}%`),
+        like(customers.phone, `%${normalized}%`),
+        like(customers.email, `%${normalized}%`),
+        like(customers.address, `%${normalized}%`)
       )
     )
+    : baseQuery;
+
+  const rows = await queryWithFilter
     .orderBy(desc(customers.createdAt))
     .limit(SEARCH_LIMIT);
 
@@ -308,24 +310,26 @@ export async function searchCustomers(query: string) {
   const session = await auth();
   if (!session?.user?.id) return [];
 
-  if (!query.trim()) return [];
+  const normalized = query.trim();
 
   try {
     return db.query.customers.findMany({
-      where: or(
-        like(customers.name, `%${query}%`),
-        like(customers.contactName, `%${query}%`),
-        like(customers.phone, `%${query}%`),
-        like(customers.email, `%${query}%`),
-        like(customers.billToAddress, `%${query}%`),
-        like(customers.shipToAddress, `%${query}%`)
-      ),
+      where: normalized
+        ? or(
+          like(customers.name, `%${normalized}%`),
+          like(customers.contactName, `%${normalized}%`),
+          like(customers.phone, `%${normalized}%`),
+          like(customers.email, `%${normalized}%`),
+          like(customers.billToAddress, `%${normalized}%`),
+          like(customers.shipToAddress, `%${normalized}%`)
+        )
+        : undefined,
       orderBy: [desc(customers.createdAt)],
       limit: SEARCH_LIMIT,
     });
   } catch (error) {
     if (isLegacyCustomersSchemaError(error)) {
-      return searchCustomersLegacy(query);
+      return searchCustomersLegacy(normalized);
     }
     console.error('Search customers error:', error);
     return [];
