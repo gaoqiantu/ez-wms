@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Camera, Search, X, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { searchProductsForPicker } from './actions';
+import type { Product } from '@/db/schema';
 
 interface QrScannerProps {
   onScan: (value: string) => void;
@@ -14,12 +16,18 @@ interface QrScannerProps {
 
 export function QrScanner({ onScan, placeholder }: QrScannerProps) {
   const t = useTranslations('ops');
+  const tCommon = useTranslations('common');
   const [isScanning, setIsScanning] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchRequestRef = useRef(0);
 
   const stopScanner = useCallback(async () => {
     try {
@@ -100,6 +108,43 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
     startCamera();
   }, [isStarting, onScan, stopScanner, t]);
 
+  useEffect(() => {
+    if (!showResults) return;
+
+    const timer = setTimeout(async () => {
+      const requestId = ++searchRequestRef.current;
+      setIsSearchLoading(true);
+      try {
+        const results = await searchProductsForPicker(searchValue);
+        if (requestId === searchRequestRef.current) {
+          setSearchResults(results);
+        }
+      } catch (err) {
+        console.error('Product search error:', err);
+        if (requestId === searchRequestRef.current) {
+          setSearchResults([]);
+        }
+      } finally {
+        if (requestId === searchRequestRef.current) {
+          setIsSearchLoading(false);
+        }
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [searchValue, showResults]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleStartClick = () => {
     setError(null);
     setIsStarting(true);
@@ -109,6 +154,7 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
     if (searchValue.trim()) {
       onScan(searchValue.trim());
       setSearchValue('');
+      setShowResults(false);
     }
   };
 
@@ -123,13 +169,45 @@ export function QrScanner({ onScan, placeholder }: QrScannerProps) {
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
-        <Input
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder || t('scanOrSearch')}
-          className="flex-1"
-        />
+        <div ref={searchContainerRef} className="relative flex-1">
+          <Input
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setShowResults(true)}
+            placeholder={placeholder || t('scanOrSearch')}
+            className="flex-1"
+          />
+          {showResults && (
+            <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md">
+              <div className="max-h-64 overflow-y-auto p-1">
+                {isSearchLoading ? (
+                  <div className="px-3 py-2 text-xs text-muted-foreground">{tCommon('loading')}</div>
+                ) : searchResults.length === 0 ? (
+                  <div className="px-3 py-2 text-xs text-muted-foreground">{tCommon('noData')}</div>
+                ) : (
+                  searchResults.map((product) => (
+                    <button
+                      key={product.id}
+                      type="button"
+                      className="w-full rounded-sm px-3 py-2 text-left text-sm hover:bg-accent"
+                      onClick={() => {
+                        onScan(product.itemCode);
+                        setSearchValue('');
+                        setShowResults(false);
+                      }}
+                    >
+                      <div className="font-mono font-medium">{product.itemCode}</div>
+                      {product.description && (
+                        <div className="line-clamp-2 text-xs text-muted-foreground">{product.description}</div>
+                      )}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         <Button variant="outline" size="icon" onClick={handleSearch}>
           <Search className="h-4 w-4" />
         </Button>
