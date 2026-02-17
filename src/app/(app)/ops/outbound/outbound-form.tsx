@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { QrScanner } from '@/components/scanner/qr-scanner';
@@ -25,14 +25,29 @@ export function OutboundForm({ locations }: OutboundFormProps) {
   const t = useTranslations('ops');
   const tCommon = useTranslations('common');
   const router = useRouter();
+  const hasPromptedRef = useRef(false);
 
   const [isPending, startTransition] = useTransition();
+  const [isAllowedWithoutInvoice, setIsAllowedWithoutInvoice] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
   const [currentInventory, setCurrentInventory] = useState<Inventory | null>(null);
   const [boxQty, setBoxQty] = useState(0);
   const [pcsQty, setPcsQty] = useState(0);
   const [location, setLocation] = useState(locations[0]?.code || '');
   const [remark, setRemark] = useState('');
+
+  useEffect(() => {
+    if (hasPromptedRef.current) return;
+    hasPromptedRef.current = true;
+
+    const confirmed = confirm(t('confirmWithoutInvoiceOutbound'));
+    if (confirmed) {
+      setIsAllowedWithoutInvoice(true);
+      return;
+    }
+
+    router.replace('/more/invoices/new');
+  }, [router, t]);
 
   // Calculate available stock
   const availablePcs = currentInventory && product
@@ -91,10 +106,6 @@ export function OutboundForm({ locations }: OutboundFormProps) {
       return;
     }
 
-    if (!confirm(t('confirmWithoutInvoiceOutbound'))) {
-      return;
-    }
-
     startTransition(async () => {
       const result = await processOutbound({
         productId: product.id,
@@ -126,6 +137,14 @@ export function OutboundForm({ locations }: OutboundFormProps) {
     setPcsQty(0);
     setRemark('');
   };
+
+  if (!isAllowedWithoutInvoice) {
+    return (
+      <div className="rounded-lg border p-4 text-sm text-muted-foreground">
+        {tCommon('loading')}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
