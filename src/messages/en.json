@@ -66,7 +66,8 @@
     "cameraPermissionDenied": "Camera permission denied. Please allow camera access.",
     "noCameraFound": "No camera found on this device.",
     "cameraInUse": "Camera is in use by another application.",
-    "cameraError": "Unable to start camera. Try using the search field instead."
+    "cameraError": "Unable to start camera. Try using the search field instead.",
+    "confirmWithoutInvoiceOutbound": "Invoices are the standard flow for outbound. Confirm outbound without invoice?"
   },
   "products": {
     "title": "Products",

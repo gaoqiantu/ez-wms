@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { QrScanner } from '@/components/scanner/qr-scanner';
 import { ProductCard } from '@/components/product/product-card';
@@ -23,6 +24,7 @@ interface OutboundFormProps {
 export function OutboundForm({ locations }: OutboundFormProps) {
   const t = useTranslations('ops');
   const tCommon = useTranslations('common');
+  const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
   const [product, setProduct] = useState<Product | null>(null);
@@ -89,6 +91,10 @@ export function OutboundForm({ locations }: OutboundFormProps) {
       return;
     }
 
+    if (!confirm(t('confirmWithoutInvoiceOutbound'))) {
+      return;
+    }
+
     startTransition(async () => {
       const result = await processOutbound({
         productId: product.id,
@@ -102,6 +108,7 @@ export function OutboundForm({ locations }: OutboundFormProps) {
         toast.error(result.error);
       } else {
         toast.success(tCommon('success'));
+        router.refresh();
         // Reset form
         setProduct(null);
         setCurrentInventory(null);

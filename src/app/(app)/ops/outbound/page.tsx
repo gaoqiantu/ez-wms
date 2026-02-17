@@ -1,17 +1,26 @@
 import { Header } from '@/components/layout/header';
 import { getTranslations } from 'next-intl/server';
-import { getLocations } from '../actions';
+import { getLocations, getOperationHistory } from '../actions';
 import { OutboundForm } from './outbound-form';
+import { OperationHistory } from '../operation-history';
 
 export default async function OutboundPage() {
-  const t = await getTranslations('ops');
-  const locations = await getLocations();
+  const [tOps, tReports, locations, history] = await Promise.all([
+    getTranslations('ops'),
+    getTranslations('reports'),
+    getLocations(),
+    getOperationHistory('OUT'),
+  ]);
 
   return (
     <>
-      <Header title={t('outbound')} showBack />
-      <div className="p-4">
+      <Header title={tOps('outbound')} showBack />
+      <div className="space-y-6 p-4">
         <OutboundForm locations={locations} />
+        <section className="space-y-3">
+          <h2 className="text-sm font-medium text-muted-foreground">{tReports('transactions')}</h2>
+          <OperationHistory items={history} />
+        </section>
       </div>
     </>
   );

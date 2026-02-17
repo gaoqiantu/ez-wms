@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { QrScanner } from '@/components/scanner/qr-scanner';
 import { ProductCard } from '@/components/product/product-card';
@@ -22,6 +23,7 @@ interface TransferFormProps {
 export function TransferForm({ locations }: TransferFormProps) {
   const t = useTranslations('ops');
   const tCommon = useTranslations('common');
+  const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
   const [product, setProduct] = useState<Product | null>(null);
@@ -95,6 +97,7 @@ export function TransferForm({ locations }: TransferFormProps) {
         toast.error(result.error);
       } else {
         toast.success(tCommon('success'));
+        router.refresh();
         // Reset form
         setProduct(null);
         setInventoryList([]);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { QrScanner } from '@/components/scanner/qr-scanner';
 import { ProductCard } from '@/components/product/product-card';
@@ -22,6 +23,7 @@ interface StocktakeFormProps {
 export function StocktakeForm({ locations }: StocktakeFormProps) {
   const t = useTranslations('ops');
   const tCommon = useTranslations('common');
+  const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
   const [product, setProduct] = useState<Product | null>(null);
@@ -85,9 +87,11 @@ export function StocktakeForm({ locations }: StocktakeFormProps) {
         toast.error(result.error);
       } else if (result.message) {
         toast.info(t('noAdjustment'));
+        router.refresh();
         handleReset();
       } else {
         toast.success(tCommon('success'));
+        router.refresh();
         handleReset();
       }
     });

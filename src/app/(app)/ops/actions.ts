@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from '@/db';
-import { products, inventory } from '@/db/schema';
-import { eq, or, like } from 'drizzle-orm';
+import { products, inventory, transactions, users } from '@/db/schema';
+import { eq, or, like, desc } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 
 export async function searchProduct(query: string) {
@@ -89,4 +89,52 @@ export async function searchProductWithInventory(query: string, location?: strin
   }
 
   return { product, inventory: inv };
+}
+
+export type OperationType = 'IN' | 'OUT' | 'MOVE' | 'CHECK' | 'RETURN';
+
+export interface OperationHistoryItem {
+  id: string;
+  type: OperationType;
+  createdAt: Date | null;
+  boxQty: number;
+  pcsQty: number;
+  fromLocation: string | null;
+  toLocation: string | null;
+  remark: string | null;
+  itemCode: string;
+  productDescription: string | null;
+  operatorName: string;
+}
+
+export async function getOperationHistory(type: OperationType, limit = 20): Promise<OperationHistoryItem[]> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return [];
+  }
+
+  const safeLimit = Math.max(1, Math.min(limit, 100));
+
+  const rows = await db
+    .select({
+      id: transactions.id,
+      type: transactions.type,
+      createdAt: transactions.createdAt,
+      boxQty: transactions.boxQty,
+      pcsQty: transactions.pcsQty,
+      fromLocation: transactions.fromLocation,
+      toLocation: transactions.toLocation,
+      remark: transactions.remark,
+      itemCode: products.itemCode,
+      productDescription: products.description,
+      operatorName: users.name,
+    })
+    .from(transactions)
+    .innerJoin(products, eq(transactions.productId, products.id))
+    .innerJoin(users, eq(transactions.operatorId, users.id))
+    .where(eq(transactions.type, type))
+    .orderBy(desc(transactions.createdAt))
+    .limit(safeLimit);
+
+  return rows as OperationHistoryItem[];
 }
