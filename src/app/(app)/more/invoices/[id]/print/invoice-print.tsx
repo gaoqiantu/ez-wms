@@ -48,7 +48,7 @@ export function InvoicePrint({ invoice, companyInfo }: InvoicePrintProps) {
 
   return (
     <>
-      <div className="fixed bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] right-6 z-50 print:hidden sm:bottom-6">
+      <div className="print-fab fixed right-6 z-[70] print:hidden">
         <Button
           onClick={handlePrint}
           className="h-14 w-14 rounded-full shadow-lg bg-emerald-600 hover:bg-emerald-700"
@@ -211,6 +211,16 @@ export function InvoicePrint({ invoice, companyInfo }: InvoicePrintProps) {
       </div>
 
       <style jsx global>{`
+        .print-fab {
+          bottom: calc(env(safe-area-inset-bottom) + 7rem);
+        }
+
+        @media (min-width: 640px) {
+          .print-fab {
+            bottom: 1.5rem;
+          }
+        }
+
         @media print {
           @page {
             size: letter;
