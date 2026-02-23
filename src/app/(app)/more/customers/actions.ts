@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { customers, type Customer } from '@/db/schema';
+import { customers, invoices, type Customer } from '@/db/schema';
 import { eq, or, like, desc } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
@@ -297,11 +297,28 @@ export async function deleteCustomer(id: string) {
   if (!session?.user?.id) return { error: 'Not authenticated' };
 
   try {
-    await db.delete(customers).where(eq(customers.id, id));
+    await db.transaction(async (tx) => {
+      // Invoices store customer snapshots, so we can safely detach FK links before deleting.
+      await tx.update(invoices)
+        .set({ billToCustomerId: null })
+        .where(eq(invoices.billToCustomerId, id));
+
+      await tx.update(invoices)
+        .set({ shipToCustomerId: null })
+        .where(eq(invoices.shipToCustomerId, id));
+
+      await tx.delete(customers).where(eq(customers.id, id));
+    });
+
     revalidatePath('/more/customers');
+    revalidatePath('/more/invoices');
     return { success: true };
   } catch (error) {
     console.error('Delete customer error:', error);
+    const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+    if (message.includes('foreign key constraint')) {
+      return { error: 'Customer is still referenced by other records' };
+    }
     return { error: 'Failed to delete customer' };
   }
 }
